@@ -26,22 +26,46 @@ const RETSPY_LOG = "RETSPY.log";
 /**
  * An array of image types supported by the module.
  */
-const IMAGES = ["PNG", "JPG", "WEBP"];
+const IMAGES = ["JPG", "PNG", "WEBP"];
 
 /**
  * A map of image types to their corresponding file extensions.
  */
-const IMG_TYPE = dict(IMAGES, [".png", ".jpg", ".webp"]);
+const IMG_TYPE = dict(IMAGES, [".jpg", ".png", ".webp"]);
 
 /**
  * A map of image types to their corresponding MIME types.
  */
-const IMG_MEDIA = dict(IMAGES, ["image/png", "image/jpeg", "image/webp"]);
+const IMG_MEDIA = dict(IMAGES, ["image/jpeg", "image/png", "image/webp"]);
 
 /**
  * A map (enumeration) of image types to their corresponding string values.
  */
 const IMAGE = dict(IMAGES, IMAGES);
+
+/**
+ * An array of video types supported by the module.
+ */
+const VIDEOS = ["MKV", "MP4", "WEBM"];
+
+/**
+ * A map of video types to their corresponding file extensions.
+ */
+const VID_TYPE = dict(VIDEOS, [".mkv", ".mp4", ".webm"]);
+
+/**
+ * A map of video types to their corresponding MIME types.
+ */
+const VID_MEDIA = dict(VIDEOS, [
+  "video/x-matroska;codecs=avc1",
+  "video/mp4;codecs=avc1",
+  "video/webm;codecs=av1",
+]);
+
+/**
+ * A map (enumeration) of video types to their corresponding string values.
+ */
+const VIDEO = dict(VIDEOS, VIDEOS);
 
 /**
  * The logger for the module.
@@ -672,6 +696,78 @@ class Animator {
   }
 }
 
+/**
+ * Class for downloading a sequence of images, encoding them into a video,
+ * and saving the video with a specified filename.
+ */
+class VideoDownloader {
+  /**
+   * Downloads a sequence of images, encodes them into a video with the
+   * specified frame rate and format, and saves the video with the specified
+   * filename.
+   *
+   * @param {Array<[string, string]>} sequence An array of URL-filename pairs.
+   *        Each element represents an image to be downloaded (considered a
+   *        frame for the video).
+   * @param {string} filename The desired filename for the final video.
+   * @param {number} fps The desired frames per second for the video.
+   * @param {string} type The desired video format (e.g., ".mp4", ".webm").
+   * @returns {Promise<object>} A promise that resolves when the video is saved
+   *          to an object with the operation result status. See
+   *          `FileSaver.save` method for details.
+   */
+  static async download(sequence, filename, fps, type) {
+    let entries = await ImageLoader.load(sequence);
+    const content = await VideoDownloader.#encodeData(entries, fps, type);
+    return FileSaver.save(content, filename);
+  }
+
+  /**
+   * (Private function) Filters the downloaded entries to extract image data
+   * and prepares the data for video encoding.
+   *
+   * @param {Array<object>} entries An array of entries, each with a `data`
+   *        property containing the image data (if successful).
+   * @param {number} fps The desired frames per second for the video.
+   * @param {string} type The desired video format (e.g., ".mp4", ".webm").
+   * @returns {Promise<Blob>} A promise that resolves to a Blob containing the
+   *          encoded video data (if successful), or rejects if no images were
+   *          downloaded.
+   */
+  static #encodeData(entries, fps, type) {
+    const images = [];
+    for (const entry of entries) {
+      if ("data" in entry) {
+        images.push(entry.data);
+      }
+    }
+    return VideoDownloader.#encodeVideo(images, fps, type);
+  }
+
+  /**
+   * (Private function) Encodes the provided images into a video using the
+   * specified frame rate and format.
+   *
+   * @param {Array<Image>} images An array of image objects representing the
+   *        video frames.
+   * @param {number} fps The desired frames per second for the video.
+   * @param {string} type The desired video format (e.g., ".mp4", ".webm").
+   * @returns {Promise<Blob>} A promise that resolves to a Blob containing the
+   *          encoded video data, or rejects if the encoding fails.
+   */
+  static #encodeVideo(images, fps, type) {
+    if (images.length > 0) {
+      return new Promise((resolve) => {
+        const animator = new Animator(images, fps);
+        animator.run();
+        const mimeType = VID_MEDIA[type];
+        animator.doCapture(mimeType, resolve);
+      });
+    }
+    return Promise.resolve();
+  }
+}
+
 export {
   FileArchiver,
   FileDownloader,
@@ -681,4 +777,7 @@ export {
   ImageLoader,
   IMG_TYPE,
   logger,
+  VID_TYPE,
+  VIDEO,
+  VideoDownloader,
 };
