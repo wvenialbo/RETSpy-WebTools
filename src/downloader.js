@@ -108,7 +108,7 @@ class FileSaver {
     if (content) {
       const objectURL = URL.createObjectURL(content);
       FileSaver.#saveAs(objectURL, filename);
-      logger.debug("FS001", `File saved: '${filename}'`);
+      logger.info("FS001", `File saved: '${filename}'`);
       return FileSaver.#buildResponse(true, "success");
     }
     logger.error("FS002", `Empty content: '${filename}'`);
@@ -203,7 +203,7 @@ class FileArchiver {
       empty = false;
       if ("data" in entry) {
         zipfile.file(entry.filename, entry.data);
-        logger.debug("FA001", `File archived: '${entry.filename}'`);
+        logger.info("FA001", `File archived: '${entry.filename}'`);
         ++count;
       } else {
         logger.warn("FA002", `No data to archive: '${entry.filename}'`);
@@ -288,7 +288,7 @@ class FileDownloader {
       const data = await response.blob();
       logger.info("FD001", `File fetched: '${src}'`);
       if (response.status === 200) {
-        logger.debug("FD002", `Response status: ${statusMessage}`);
+        logger.info("FD002", `Response status: ${statusMessage}`);
       } else {
         logger.warn("FD003", `Response status: ${statusMessage}`);
       }
@@ -296,11 +296,11 @@ class FileDownloader {
     } catch (error) {
       logger.error("FD101", `Failed to fetch: '${src}'`);
       if (network_error) {
-        logger.info("FD104", `Network error: '${error.message}'`);
+        logger.debug("FD104", `Network error: '${error.message}'`);
       } else if (decoding_error) {
-        logger.info("FD103", `Decoding error: '${error.message}'`);
+        logger.debug("FD103", `Decoding error: '${error.message}'`);
       } else {
-        logger.info("FD102", `HTTP error: ${error.message}`);
+        logger.debug("FD102", `HTTP error: ${error.message}`);
       }
       return { src, filename };
     }
@@ -443,12 +443,18 @@ class ImageDownloader {
       if ("data" in entry) {
         try {
           entry.data = ImageDownloader.#encodeImage(entry.data, type);
+          logger.info("ID001", `Image encoded: '${entry.filename}'`);
           imageEntries.push(entry);
         } catch (error) {
           logger.error("ID101", `Image encoding failed: '${entry.filename}'`);
-          logger.debug("ID102", `Failed to encode: ${error.message}`);
+          logger.debug("ID102", `Failed to encode image: ${error.message}`);
         }
+      } else {
+        logger.warn("ID201", `No image data to encode: '${entry.filename}'`);
       }
+    }
+    if (imageEntries.length === 0) {
+      logger.info("ID202", "No images encoded");
     }
     return imageEntries;
   }
@@ -718,7 +724,12 @@ class VideoDownloader {
    */
   static async download(sequence, filename, fps, type) {
     let entries = await ImageLoader.load(sequence);
-    const content = await VideoDownloader.#encodeData(entries, fps, type);
+    const content = await VideoDownloader.#encodeData(
+      entries,
+      fps,
+      type,
+      filename,
+    );
     return FileSaver.save(content, filename);
   }
 
@@ -734,14 +745,23 @@ class VideoDownloader {
    *          encoded video data (if successful), or rejects if no images were
    *          downloaded.
    */
-  static #encodeData(entries, fps, type) {
+  static #encodeData(entries, fps, type, filename) {
     const images = [];
     for (const entry of entries) {
       if ("data" in entry) {
         images.push(entry.data);
+        logger.info("VD001", `Frame added for encoding: '${entry.filename}'`);
+      } else {
+        logger.warn("VD201", `No frame data to encode: '${entry.filename}'`);
       }
     }
-    return VideoDownloader.#encodeVideo(images, fps, type);
+    if (images.length === 0) {
+      logger.info("VD202", "No frames to encode");
+    }
+    return VideoDownloader.#encodeVideo(images, fps, type).catch((error) => {
+      logger.error("VD101", `Video encoding failed: '${filename}'`);
+      logger.debug("VD102", `Failed to encode video: ${error.message}`);
+    });
   }
 
   /**
