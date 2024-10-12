@@ -462,6 +462,216 @@ class ImageDownloader {
   }
 }
 
+/**
+ * Class responsible for animating a sequence of images and capturing video
+ * frames.
+ */
+class Animator {
+  /**
+   * (Private variable) Holds the callback function for video capture
+   * completion.
+   */
+  #onCompletion;
+  /**
+   * (Private variable) Represents the MediaRecorder instance for video
+   * capture.
+   */
+  #recorder;
+  /**
+   * (Private variable) Tracks the timestamp of the last animation frame.
+   */
+  #lastDraw;
+  /**
+   * (Private variable) Holds the MIME type for the captured video.
+   */
+  #mimeType;
+  /**
+   * (Private variable) Stores the array of images used for animation.
+   */
+  #images;
+  /**
+   * (Private variable) Represents the time interval between frames (in
+   * milliseconds).
+   */
+  #lapse;
+  /**
+   * (Private variable) Holds the index of the last image in the sequence.
+   */
+  #last;
+  /**
+   * (Private variable) Represents the canvas element used for drawing frames.
+   */
+  #canvas;
+  /**
+   * (Private variable) Represents the 2D rendering context of the canvas.
+   */
+  #context;
+  /**
+   * (Private variable) Holds the index of the currently displayed image.
+   */
+  #currentImage = 0;
+  /**
+   * (Private variable) Indicates if video capture has begun.
+   */
+  #capturing = false;
+  /**
+   * (Private variable) Indicates if all frames for video capture have been
+   * processed.
+   */
+  #captured = false;
+  /**
+   * (Private variable) Flag to trigger video capture initiation.
+   */
+  #capture = false;
+
+  /**
+   * Constructs an Animator instance to animate a sequence of images at the
+   * specified frame rate.
+   *
+   * @param {Array<Image>} images An array of image objects representing the
+   *        video frames.
+   * @param {number} fps The desired frames per second for the video animation.
+   */
+  constructor(images, fps) {
+    this.#lapse = 1000 / fps;
+    this.#last = images.length - 1;
+
+    this.#images = images;
+
+    this.#canvas = this.#createCanvas();
+    this.#context = this.#canvas.getContext("2d");
+    this.#lastDraw = document.timeline.currentTime;
+  }
+
+  /**
+   * Initiates video capture with the specified MIME type and calls the
+   * provided callback function when the capture is complete.
+   *
+   * @param {string} mimeType The desired MIME type for the captured video
+   *        (e.g., "video/mp4").
+   * @param {function} onCompletion A callback function that will be called
+   *        with the captured video data as a Blob object when the capture is
+   *        complete.
+   */
+  doCapture(mimeType, onCompletion) {
+    this.#onCompletion = onCompletion;
+    this.#mimeType = mimeType;
+    this.#capture = true;
+  }
+
+  /**
+   * Starts the animation loop, displaying images at the specified frame rate.
+   */
+  run() {
+    this.#animate(document.timeline.currentTime);
+  }
+
+  #animate(currentTime) {
+    const elapsedTime = currentTime - this.#lastDraw;
+
+    if (elapsedTime >= this.#lapse) {
+      this.#lastDraw = currentTime;
+
+      if (this.#capture && this.#currentImage == 0 && !this.#capturing) {
+        this.#capturing = true;
+        this.#beginCapture();
+      }
+
+      this.#updateFrame();
+
+      if (
+        this.#capture &&
+        this.#currentImage == this.#last &&
+        this.#capturing &&
+        !this.#captured
+      ) {
+        this.#captured = true;
+        this.#capture = false;
+        this.#endCapture();
+      }
+
+      const nextImage = this.#currentImage + 1;
+      this.#currentImage = nextImage % this.#images.length;
+    }
+
+    requestAnimationFrame(this.#animate.bind(this));
+  }
+
+  /**
+   * (Private function) Starts capturing video frames after clearing the canvas
+   * with a black background.
+   */
+  #beginCapture() {
+    this.#recorder = this.#initializeStream(this.#mimeType);
+    this.#recorder.start();
+  }
+
+  /**
+   * (Private function) Creates a canvas element with dimensions based on the
+   * first image of th sequence.
+   *
+   * @returns {HTMLCanvasElement} A newly created canvas element.
+   */
+  #createCanvas() {
+    const canvas = document.createElement("canvas");
+
+    canvas.width = this.#images[0].width;
+    canvas.height = this.#images[0].height;
+
+    return canvas;
+  }
+
+  /**
+   * (Private function) Stops capturing video frames after all frames are
+   * processed.
+   */
+  #endCapture() {
+    this.#recorder.stop();
+  }
+
+  /**
+   * (Private function) Initializes the MediaRecorder instance for capturing
+   * video frames from the canvas with the specified MIME type.
+   *
+   * @param {string} mimeType The desired MIME type for the captured video
+   *        (e.g., "video/mp4").
+   * @returns {MediaRecorder} A MediaRecorder instance configured for capturing
+   *          video.
+   */
+  #initializeStream(mimeType) {
+    // this.#context.fillStyle = "black";
+    // this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+
+    const options = { mimeType };
+    const stream = this.#canvas.captureStream();
+    const recorder = new MediaRecorder(stream, options);
+
+    const chunks = [];
+
+    recorder.ondataavailable = (event) => {
+      if (event.data && event.data.size > 0) {
+        chunks.push(event.data);
+      }
+    };
+
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: mimeType });
+      this.#onCompletion(blob);
+    };
+
+    return recorder;
+  }
+
+  /**
+   * (Private function) Clears the canvas and draws the current image from the
+   * sequence.
+   */
+  #updateFrame() {
+    this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    this.#context.drawImage(this.#images[this.#currentImage], 0, 0);
+  }
+}
+
 export {
   FileArchiver,
   FileDownloader,
