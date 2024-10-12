@@ -1,4 +1,5 @@
 import JSZip from "../lib/jszip.min";
+import { dict } from "./common";
 import { Logger } from "./logging";
 
 /**
@@ -9,12 +10,38 @@ import { Logger } from "./logging";
 const MODULE_FILENAME = "downloader.js";
 
 /**
- * The filenames of the README and log files in the archive.
+ * The filename of the README file in the archive.
  * @type {string}
  * @constant
  */
 const README_TXT = "README.txt";
+
+/**
+ * The filename of the log file in the archive.
+ * @type {string}
+ * @constant
+ */
 const RETSPY_LOG = "RETSPY.log";
+
+/**
+ * An array of image types supported by the module.
+ */
+const IMAGES = ["PNG", "JPG", "WEBP"];
+
+/**
+ * A map of image types to their corresponding file extensions.
+ */
+const IMG_TYPE = dict(IMAGES, [".png", ".jpg", ".webp"]);
+
+/**
+ * A map of image types to their corresponding MIME types.
+ */
+const IMG_MEDIA = dict(IMAGES, ["image/png", "image/jpeg", "image/webp"]);
+
+/**
+ * A map (enumeration) of image types to their corresponding string values.
+ */
+const IMAGE = dict(IMAGES, IMAGES);
 
 /**
  * The logger for the module.
@@ -332,4 +359,116 @@ class ImageLoader {
   }
 }
 
-export { FileArchiver, FileDownloader, FileSaver, ImageLoader, logger };
+/**
+ * Class for downloading a sequence of images, encoding them to a specific
+ * format, and creating an archive with an optional readme.
+ */
+class ImageDownloader {
+  /**
+   * Downloads a sequence of images, encodes them to the specified format, and
+   * creates an archive with the specified filename and an optional readme.
+   *
+   * @param {Array<[string, string]>} sequence An array of URL-filename pairs.
+   *        Each element represents an image to be downloaded. The first
+   *        element is the URL of the image, and the second element is the
+   *        desired filename for the downloaded image.
+   * @param {string} filename The desired filename for the final archive.
+   * @param {string} type The desired image format for encoding the downloaded
+   *        images (e.g., ".png", ".jpeg", ".webp").
+   * @param {string} readme Optional readme content to include in the archive.
+   * @returns {Promise<object>} A promise that resolves to an object with the
+   *          operation result status. See `FileSaver.save` method for details.
+   */
+  static async download(sequence, filename, type, readme) {
+    let entries = await ImageLoader.load(sequence);
+    entries = ImageDownloader.#encodeData(entries, type);
+    return FileArchiver.save(entries, filename, readme);
+  }
+
+  /**
+   * (Private function) Draws an image onto a canvas element.
+   *
+   * @param {Image} image The image to be drawn.
+   * @returns {HTMLCanvasElement} The canvas element containing the drawn
+   *          image.
+   */
+  static #drawImage(image) {
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d");
+    context.drawImage(image, 0, 0);
+    return canvas;
+  }
+
+  /**
+   * (Private function) Encodes the image data in the provided entries to the
+   * specified format.
+   *
+   * @param {Array<object>} entries An array of entries, each with a `data`
+   *        property containing the image data. See `FileArchiver.save` method
+   *        for details.
+   * @param {string} type The desired image format for encoding (e.g., ".png",
+   *        ".jpeg", ".webp").
+   * @returns {Array<object>} A new array of entries with the encoded image
+   *          data.
+   */
+  static #encodeData(entries, type) {
+    const imageEntries = [];
+    for (const entry of entries) {
+      if ("data" in entry) {
+        try {
+          entry.data = ImageDownloader.#encodeImage(entry.data, type);
+          imageEntries.push(entry);
+        } catch (error) {
+          logger.error("ID101", `Image encoding failed: '${entry.filename}'`);
+          logger.debug("ID102", `Failed to encode: ${error.message}`);
+        }
+      }
+    }
+    return imageEntries;
+  }
+
+  /**
+   * (Private function) Encodes a single image to the specified format.
+   *
+   * @param {Image} image The image to be encoded.
+   * @param {string} type The desired image format (e.g., ".png", ".jpeg",
+   *        ".webp").
+   * @returns {string} The encoded image data as a data URL.
+   */
+  static #encodeImage(image, type) {
+    const canvas = ImageDownloader.#drawImage(image);
+    const mimeType = IMG_MEDIA[type];
+    const dataURL = canvas.toDataURL(mimeType);
+    return ImageDownloader.#urlToBlob(dataURL);
+  }
+
+  /**
+   * (Private function) Converts a data URL to a Blob object.
+   *
+   * @param {string} dataURI The data URL to be converted.
+   * @returns {Blob} The converted Blob object.
+   */
+  static #urlToBlob(dataURI) {
+    const byteString = atob(dataURI.split(",")[1]);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.codePointAt(i);
+    }
+    const mimeType = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    return new Blob([uint8Array], { type: mimeType });
+  }
+}
+
+export {
+  FileArchiver,
+  FileDownloader,
+  FileSaver,
+  IMAGE,
+  ImageDownloader,
+  ImageLoader,
+  IMG_TYPE,
+  logger,
+};
