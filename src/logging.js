@@ -13,7 +13,7 @@ const MODULE_FILENAME = "logging.js";
 const LEVELS = ["DEBUG", "INFO", "WARN", "ERROR", "FATAL", "UNKNOWN"];
 
 /**
- * A map of logging levels to their corresponding string values.
+ * A map (enumeration) of logging levels to their corresponding string values.
  */
 const LEVEL = dict(LEVELS, LEVELS);
 
