@@ -436,4 +436,4 @@ class Logger {
   }
 }
 
-export { LEVEL, LEVELMAP, LEVELS, Logger, LoggerStore };
+export { LEVEL, Logger, LoggerStore };
