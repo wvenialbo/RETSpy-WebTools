@@ -26,6 +26,16 @@ const RETSPY_LOG = "RETSPY.log";
 /**
  * An array of image types supported by the module.
  */
+const ARCHIVES = ["ZIP", "TAR", "GZIP"];
+
+/**
+ * A map (enumeration) of image types to their corresponding string values.
+ */
+const ARCHIVE = dict(ARCHIVES, ARCHIVES);
+
+/**
+ * An array of image types supported by the module.
+ */
 const IMAGES = ["JPG", "PNG", "WEBP"];
 
 /**
@@ -789,6 +799,7 @@ class VideoDownloader {
 }
 
 export {
+  ARCHIVE,
   FileArchiver,
   FileDownloader,
   FileSaver,
