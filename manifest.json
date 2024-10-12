@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "RETSpy - Downloader Tool",
+  "version": "1.0",
+  "description": "Herramienta de descarga de imágenes satelitales y de radar.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "./dmh.js",
+        "./dmh.css"
+      ],
+      "matches": [
+        "https://www.meteorologia.gov.py/*"
+      ]
+    },
+    {
+      "resources": [
+        "simepar.js"
+      ],
+      "matches": [
+        "https://www.simepar.br/*"
+      ]
+    },
+    {
+      "resources": [
+        "./lib/jszip.min.js",
+        "./src/common.js",
+        "./src/logging.js",
+        "./shared.js"
+      ],
+      "matches": [
+        "https://www.meteorologia.gov.py/*",
+        "https://www.simepar.br/*"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.meteorologia.gov.py/satelite-goes-16*",
+        "https://www.simepar.br/simepar/radar_msc*"
+      ],
+      "js": [
+        "./src/content.js"
+      ]
+    }
+  ]
+}
