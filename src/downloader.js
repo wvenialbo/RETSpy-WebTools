@@ -225,11 +225,13 @@ class FileDownloader {
     const src = item[0];
     const filename = item[1];
     let network_error = true;
+    let decoding_error = true;
     try {
       const response = await fetch(src, params);
       network_error = false;
       const statusMessage = `${response.status} ${response.statusText}`;
       if (!response.ok) {
+        decoding_error = false;
         throw new Error(statusMessage);
       }
       const data = await response.blob();
@@ -243,7 +245,9 @@ class FileDownloader {
     } catch (error) {
       logger.error("FD101", `Failed to fetch: '${src}'`);
       if (network_error) {
-        logger.info("FD103", `Network error: '${error.message}'`);
+        logger.info("FD104", `Network error: '${error.message}'`);
+      } else if (decoding_error) {
+        logger.info("FD103", `Decoding error: '${error.message}'`);
       } else {
         logger.info("FD102", `HTTP error: ${error.message}`);
       }
@@ -311,9 +315,18 @@ class ImageLoader {
     const filename = item[1];
     return new Promise((resolve) => {
       const img = new Image();
-      img.addEventListener("load", () => resolve({ src, filename, data: img }));
-      img.addEventListener("error", () => resolve({ src, filename }));
-      img.addEventListener("abort", () => resolve({ src, filename }));
+      img.addEventListener("load", () => {
+        logger.info("IL001", `Image loaded: '${src}'`);
+        resolve({ src, filename, data: img });
+      });
+      img.addEventListener("error", () => {
+        logger.error("IL101", `Failed to load: '${src}'`);
+        resolve({ src, filename });
+      });
+      img.addEventListener("abort", () => {
+        logger.info("IL102", `Aborted loading: '${src}'`);
+        resolve({ src, filename });
+      });
       img.src = src;
     });
   }
