@@ -84,13 +84,16 @@ const config = [
       "@stylistic/js/indent": ["error", 2],
       "@stylistic/js/comma-dangle": ["error", "always-multiline"],
       "@stylistic/js/indent": ["error", 2, { SwitchCase: 1 }],
-      "@stylistic/js/lines-between-class-members": ["error", {
-        enforce: [
-          { blankLine: "always", prev: "*", next: "method" },
-          { blankLine: "always", prev: "method", next: "field" },
-          { blankLine: "never", prev: "field", next: "field" },
-        ]
-      },],
+      "@stylistic/js/lines-between-class-members": [
+        "error",
+        {
+          enforce: [
+            { blankLine: "always", prev: "*", next: "method" },
+            { blankLine: "always", prev: "method", next: "field" },
+            { blankLine: "never", prev: "field", next: "field" },
+          ],
+        },
+      ],
     },
   },
   pluginPrettier.configs.recommended,
