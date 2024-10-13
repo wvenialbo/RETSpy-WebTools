@@ -1,4 +1,4 @@
-import * as JSZip from "../lib/jszip.min.js";
+import { strToU8, zip } from "../lib/fflate.js";
 import { dict } from "./common.js";
 import { Logger } from "./logging.js";
 
@@ -24,9 +24,23 @@ const README_TXT = "README.txt";
 const RETSPY_LOG = "RETSPY.log";
 
 /**
- * An array of image types supported by the module.
+ * An array of archive types supported by the module.
  */
 const ARCHIVES = ["ZIP", "TAR", "GZIP"];
+
+/**
+ * A map of archive types to their corresponding file extensions.
+ */
+const ARC_TYPE = dict(ARCHIVES, [".zip", ".tar", ".tar.gz"]);
+
+/**
+ * A map of archive types to their corresponding MIME types.
+ */
+const ARC_MEDIA = dict(ARCHIVES, [
+  "application/zip",
+  "application/x-tar",
+  "application/gzip",
+]);
 
 /**
  * A map (enumeration) of image types to their corresponding string values.
@@ -85,6 +99,72 @@ const VIDEO = dict(VIDEOS, VIDEOS);
 const logger = new Logger(MODULE_FILENAME);
 
 /**
+ * Represents an archive for storing and managing files and folders.
+ */
+class Archive {
+  #length = 0;
+  #content = {};
+  #folders = [];
+
+  /**
+   * Creates a new folder within the archive.
+   *
+   * @param {string} name The name of the new folder.
+   * @returns {Archive} A new Archive object representing the created folder.
+   */
+  folder(name) {
+    if (name in this.#content) {
+      logger.warn("AR001", `Folder already exists: '${name}'`);
+      return this.#folders.find(
+        (folder) => folder.#content === this.#content[name],
+      );
+    }
+    const folder = new Archive();
+    this.#content[name] = folder.#content;
+    this.#folders.push(folder);
+    return folder;
+  }
+
+  /**
+   * Adds a file to the archive.
+   *
+   * @param {string} name The name of the file.
+   * @param {string|Uint8Array} data The file data as a string or Uint8Array.
+   * @returns {Archive} The current Archive object.
+   */
+  file(name, data) {
+    this.#content[name] =
+      typeof data === "string" ? strToU8(data) : new Uint8Array(data);
+    ++this.#length;
+    return this;
+  }
+
+  /**
+   * Gets the content of the archive as an object.
+   *
+   * @returns {Object} An object representing the archive's content, with
+   *          folders as keys and their contents as values.
+   */
+  get content() {
+    return this.#content;
+  }
+
+  /**
+   * Gets the total number of files in the archive root folder and its
+   * subfolders.
+   *
+   * @returns {number} The total length of the archive in bytes.
+   */
+  get length() {
+    let totalLength = this.#length;
+    for (const folder of this.#folders) {
+      totalLength += folder.length;
+    }
+    return totalLength;
+  }
+}
+
+/**
  * Class to save various types of content (Blob, Image, Video, Zip, etc.)
  * as a file with the specified filename.
  */
@@ -115,17 +195,26 @@ class FileSaver {
    *          and a `message` property with details (e.g., "empty", "success").
    */
   static save(content, filename) {
-    if (content) {
-      const objectURL = URL.createObjectURL(content);
-      FileSaver.#saveAs(objectURL, filename);
-      logger.info("FS001", `File saved: '${filename}'`);
-      return FileSaver.#buildResponse(true, "success");
-    }
-    logger.error("FS002", `Empty content: '${filename}'`);
+    const objectURL = URL.createObjectURL(content);
+    FileSaver.#saveAs(objectURL, filename);
+    logger.info("FS001", `File saved: '${filename}'`);
+    return FileSaver.#buildResponse(true, "success");
+  }
+
+  static empty(filename) {
+    logger.info("FS002", `Nothing to save: '${filename}'`);
     return FileSaver.#buildResponse(false, "empty");
   }
 
-  static #buildResponse(ok, message) {
+  static error(filename, error) {
+    logger.info("FS003", `Failed to save: '${filename}'`);
+    return FileSaver.#buildResponse(false, "error", error);
+  }
+
+  static #buildResponse(ok, message, error) {
+    if (error) {
+      return { ok, message, error };
+    }
     return { ok, message };
   }
 
@@ -182,16 +271,40 @@ class FileArchiver {
    *        property (Blob or string) containing the content or a `src`
    *        property(string) containing a URL to load the content.
    * @param {string} filename The desired filename for the archive.
+   * @param {string} type The desired archive format for the downloaded files
+   *        (e.g., "ZIP", "TAR", "GZIP").
    * @param {string} readme Optional readme content to include in the archive.
    * @returns {Promise<object>} A promise that resolves to an object with the
    *          operation result status. See `FileSaver.save` method for details.
    */
-  static async save(entries, filename, readme) {
+  static save(entries, filename, type, readme) {
     const zipfile = FileArchiver.#createZip(entries, readme);
-    const content = zipfile
-      ? await zipfile.generateAsync({ type: "blob" })
-      : undefined;
-    return FileSaver.save(content, filename);
+    if (zipfile.length === 0) {
+      return Promise.resolve(FileSaver.empty(filename));
+    }
+    return new Promise((resolve) =>
+      FileArchiver.#deflate([filename, type], zipfile, resolve),
+    );
+  }
+
+  static #deflate(filespec, zipfile, resolve) {
+    zip(zipfile.content, (error, data) =>
+      FileArchiver.#completion(filespec, error, data, resolve),
+    );
+  }
+
+  static #completion(filespec, error, data, resolve) {
+    const [filename, type] = filespec;
+    if (error) {
+      const message = `${error.code} - ${error.message}`;
+      logger.error("FA201", `Failed to create archive: '${filename}'`);
+      logger.debug("FA202", `${error.name}: ${message}`);
+      resolve(FileSaver.error(filename, error));
+    } else {
+      logger.info("FA101", `Archive created: '${filename}'`);
+      const content = new Blob([data], { type: ARC_MEDIA[type] });
+      resolve(FileSaver.save(content, filename));
+    }
   }
 
   /**
@@ -208,11 +321,12 @@ class FileArchiver {
   static #createZip(entries, readme) {
     let count = 0;
     let empty = true;
-    const zipfile = new JSZip();
+    const zipfile = new Archive();
+    const sequence = zipfile.folder("SEQUENCE");
     for (const entry of entries) {
       empty = false;
       if ("data" in entry) {
-        zipfile.file(entry.filename, entry.data);
+        sequence.file(entry.filename, entry.data);
         logger.info("FA001", `File archived: '${entry.filename}'`);
         ++count;
       } else {
@@ -259,15 +373,17 @@ class FileDownloader {
    *        is the URL of the file, and the second element is the desired
    *        filename for the downloaded content in the archive.
    * @param {string} filename The desired filename for the final archive.
+   * @param {string} type The desired archive format for the downloaded files
+   *        (e.g., "ZIP", "TAR", "GZIP").
    * @param {object} params Options for the fetch requests (e.g., method,
    *        headers).
    * @param {string} readme Optional readme content to include in the archive.
    * @returns {Promise<object>} A promise that resolves to an object with the
    *          operation result status. See `FileSaver.save` method for details.
    */
-  static async download(sequence, filename, params, readme) {
+  static async download(sequence, filename, type, params, readme) {
     const entries = await FileDownloader.#getData(sequence, params);
-    return FileArchiver.save(entries, filename, readme);
+    return FileArchiver.save(entries, filename, type, readme);
   }
 
   /**
@@ -295,7 +411,7 @@ class FileDownloader {
         decoding_error = false;
         throw new Error(statusMessage);
       }
-      const data = await response.blob();
+      const data = await response.arrayBuffer();
       logger.info("FD001", `File fetched: '${src}'`);
       if (response.status === 200) {
         logger.info("FD002", `Response status: ${statusMessage}`);
@@ -407,16 +523,18 @@ class ImageDownloader {
    *        element is the URL of the image, and the second element is the
    *        desired filename for the downloaded image.
    * @param {string} filename The desired filename for the final archive.
-   * @param {string} type The desired image format for encoding the downloaded
-   *        images (e.g., ".png", ".jpeg", ".webp").
+   * @param {string} imgtype The desired image format for encoding the
+   *        downloaded images (e.g., "PNG", "JPG", "WEBP").
+   * @param {string} arctype The desired archive format for the downloaded
+   *        files (e.g., "ZIP", "TAR", "GZIP").
    * @param {string} readme Optional readme content to include in the archive.
    * @returns {Promise<object>} A promise that resolves to an object with the
    *          operation result status. See `FileSaver.save` method for details.
    */
-  static async download(sequence, filename, type, readme) {
+  static async download(sequence, filename, imgtype, arctype, readme) {
     let entries = await ImageLoader.load(sequence);
-    entries = ImageDownloader.#encodeData(entries, type);
-    return FileArchiver.save(entries, filename, readme);
+    entries = await ImageDownloader.#encodeData(entries, imgtype);
+    return FileArchiver.save(entries, filename, arctype, readme);
   }
 
   /**
@@ -444,17 +562,17 @@ class ImageDownloader {
    *        for details.
    * @param {string} type The desired image format for encoding (e.g., ".png",
    *        ".jpeg", ".webp").
-   * @returns {Array<object>} A new array of entries with the encoded image
-   *          data.
+   * @returns {Promise<Array<object>>} A promise that resolves to an array of
+   *          entries with the encoded image data.
    */
   static #encodeData(entries, type) {
-    const imageEntries = [];
+    const encoders = [];
     for (const entry of entries) {
       if ("data" in entry) {
         try {
-          entry.data = ImageDownloader.#encodeImage(entry.data, type);
+          const encoder = ImageDownloader.#encodeImage(entry, type);
           logger.info("ID001", `Image encoded: '${entry.filename}'`);
-          imageEntries.push(entry);
+          encoders.push(encoder);
         } catch (error) {
           logger.error("ID101", `Image encoding failed: '${entry.filename}'`);
           logger.debug("ID102", `Failed to encode image: ${error.message}`);
@@ -463,10 +581,10 @@ class ImageDownloader {
         logger.warn("ID201", `No image data to encode: '${entry.filename}'`);
       }
     }
-    if (imageEntries.length === 0) {
+    if (encoders.length === 0) {
       logger.info("ID202", "No images encoded");
     }
-    return imageEntries;
+    return Promise.all(encoders);
   }
 
   /**
@@ -475,30 +593,16 @@ class ImageDownloader {
    * @param {Image} image The image to be encoded.
    * @param {string} type The desired image format (e.g., ".png", ".jpeg",
    *        ".webp").
-   * @returns {string} The encoded image data as a data URL.
+   * @returns {Promise<object>} A promise that resolves to an object with the
+   *          encoded image data as an array buffer.
    */
-  static #encodeImage(image, type) {
-    const canvas = ImageDownloader.#drawImage(image);
+  static async #encodeImage(entry, type) {
+    const canvas = ImageDownloader.#drawImage(entry.data);
     const mimeType = IMG_MEDIA[type];
-    const dataURL = canvas.toDataURL(mimeType);
-    return ImageDownloader.#urlToBlob(dataURL);
-  }
-
-  /**
-   * (Private function) Converts a data URL to a Blob object.
-   *
-   * @param {string} dataURI The data URL to be converted.
-   * @returns {Blob} The converted Blob object.
-   */
-  static #urlToBlob(dataURI) {
-    const byteString = atob(dataURI.split(",")[1]);
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const uint8Array = new Uint8Array(arrayBuffer);
-    for (let i = 0; i < byteString.length; i++) {
-      uint8Array[i] = byteString.codePointAt(i);
-    }
-    const mimeType = dataURI.split(",")[0].split(":")[1].split(";")[0];
-    return new Blob([uint8Array], { type: mimeType });
+    const dataURI = canvas.toDataURL(mimeType);
+    const response = await fetch(dataURI);
+    entry.data = await response.arrayBuffer();
+    return entry;
   }
 }
 
@@ -799,6 +903,7 @@ class VideoDownloader {
 }
 
 export {
+  ARC_TYPE,
   ARCHIVE,
   FileArchiver,
   FileDownloader,
