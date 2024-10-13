@@ -3,75 +3,54 @@ class InjectionTarget {
     this.target = document.querySelectorAll(node)[index];
   }
 
-  #appendNode(node) {
-    // console.debug("append", { node });
-    this.target.append(node);
-    return this;
-  }
-
   #appendNodes(nodes) {
     for (const node of nodes) {
-      this.#appendNode(node);
+      console.debug(`append node: ${node.tagName}`, { node });
+      this.target.append(node);
     }
     return this;
   }
 
-  injectScript(url, async = true) {
-    const node = InjectionTarget.#createScript(url, async);
-    return this.#appendNode(node);
-  }
-
-  injectScripts(urls, async = true) {
-    const nodes = urls.map((url) => InjectionTarget.#createScript(url, async));
+  injectScripts(entries) {
+    entries = Array.isArray(entries) ? entries : [entries];
+    console.debug(`injecting scripts: ${entries.map((entry) => entry.src)}`);
+    const nodes = entries.map((entry) => InjectionTarget.#createScript(entry));
     return this.#appendNodes(nodes);
   }
 
-  static #createScript(url, async = true) {
-    // console.debug(`injecting: ${url}`);
-
+  static #createScript(entry) {
     const script = document.createElement("script");
-
-    script.type = "text/javascript";
-    script.src = chrome.runtime.getURL(url);
-    script.async = async;
-
+    script.type = entry.module ? "module" : "text/javascript";
+    script.src = chrome.runtime.getURL(entry.src);
+    script.async = entry.async || false;
     script.addEventListener("load", () => {
-      InjectionTarget.#onLoad(url);
+      InjectionTarget.#onLoad(entry.src);
     });
     script.addEventListener("error", (event) => {
-      InjectionTarget.#onError(url, event);
+      InjectionTarget.#onError(entry.src, event);
     });
-
     return script;
   }
 
-  injectLink(url, async = true) {
-    const node = InjectionTarget.#createLink(url, async);
-    return this.#appendNode(node);
-  }
-
-  injectLinks(urls, async = true) {
-    const nodes = urls.map((url) => InjectionTarget.#createLink(url, async));
+  injectLinks(entries) {
+    entries = Array.isArray(entries) ? entries : [entries];
+    console.debug(`injecting links: ${entries.map((entry) => entry.href)}`);
+    const nodes = entries.map((entry) => InjectionTarget.#createLink(entry));
     return this.#appendNodes(nodes);
   }
 
-  static #createLink(url, async = true) {
-    // console.debug(`injecting: ${url}`);
-
+  static #createLink(entry) {
     const link = document.createElement("link");
-
     link.type = "text/css";
     link.rel = "stylesheet";
-    link.href = chrome.runtime.getURL(url);
-    link.async = async;
-
+    link.href = chrome.runtime.getURL(entry.href);
+    link.async = entry.async || false;
     link.addEventListener("load", () => {
-      InjectionTarget.#onLoad(url);
+      InjectionTarget.#onLoad(entry.href);
     });
     link.addEventListener("error", (event) => {
-      InjectionTarget.#onError(url, event);
+      InjectionTarget.#onError(entry.href, event);
     });
-
     return link;
   }
 
@@ -96,7 +75,7 @@ class InjectionTarget {
       script.type = "text/javascript";
       script.src = chrome.runtime.getURL(url);
 
-      this.#appendNode(script);
+      this.#appendNodes([script]);
     });
   }
 
@@ -122,19 +101,22 @@ const dmh_tool = {
   main: () => {
     console.debug(`starting ${dmh_tool.name}`);
 
-    const urls = [
-      "../lib/jszip.min.js",
-      "./common.js",
-      "./logging.js",
-      "../shared.js",
-      "../dmh.js",
+    const scripts = [
+      { src: "lib/jszip.min.js", async: true, module: true },
+      { src: "src/common.js", async: true, module: true },
+      { src: "src/logging.js", async: true, module: true },
+      { src: "src/downloader.js", async: true, module: true },
+      { src: "src/shared.js", async: true, module: true },
+      { src: "src/dmh.js", async: true, module: true },
     ];
 
+    const css = { href: "assets/dmh.css" };
+
     const head = new InjectionTarget("head");
-    head.injectLink("dmh.css", false);
+    head.injectLinks(css);
 
     const body = new InjectionTarget("body");
-    body.injectScripts(urls, false);
+    body.injectScripts(scripts);
   },
 
   matches: ["https://www.meteorologia.gov.py/satelite-goes-16"],
