@@ -1,6 +1,6 @@
-import JSZip from "../lib/jszip.min";
-import { dict } from "./common";
-import { Logger } from "./logging";
+import * as JSZip from "../lib/jszip.min.js";
+import { dict } from "./common.js";
+import { Logger } from "./logging.js";
 
 /**
  * The filename of the module.

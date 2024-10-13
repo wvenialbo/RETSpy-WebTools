@@ -1,4 +1,4 @@
-import { backdict, dict } from "./common";
+import { backdict, dict } from "./common.js";
 
 /**
  * The filename of the module.

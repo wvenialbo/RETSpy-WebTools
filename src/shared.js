@@ -1,5 +1,5 @@
-import { ARCHIVE } from "./downloader";
-import { Logger } from "./logging";
+import { ARCHIVE } from "./downloader.js";
+import { Logger } from "./logging.js";
 
 /**
  * The filename of the module.
