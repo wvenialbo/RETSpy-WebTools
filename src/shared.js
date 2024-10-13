@@ -1,4 +1,3 @@
-import { ARCHIVE } from "./downloader.js";
 import { Logger } from "./logging.js";
 
 /**
@@ -63,11 +62,10 @@ class FilenameUtils {
    * @param {string[]} urls An array of URLs to be included in the archive.
    * @param {string} prefix A prefix to be prepended to the filename
    *        (optional).
-   * @param {string} type The desired archive type (optional, defaults to
-   *        "ZIP").
+   * @param {string} type The desired archive type (optional).
    * @returns {string} The constructed filename for the archive.
    */
-  static buildArchiveFilename(urls, prefix, type = ARCHIVE.ZIP) {
+  static buildArchiveFilename(urls, prefix, type) {
     const lastURL = urls.at(-1);
     let filename = FilenameUtils.getFilename(lastURL);
     if (type) {
