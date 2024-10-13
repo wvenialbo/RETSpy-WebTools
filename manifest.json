@@ -7,20 +7,20 @@
   "permissions": ["activeTab", "scripting", "storage"],
   "web_accessible_resources": [
     {
-      "resources": ["./dmh.js", "./dmh.css"],
+      "resources": ["src/dmh.js", "assets/dmh.css"],
       "matches": ["https://www.meteorologia.gov.py/*"]
     },
     {
-      "resources": ["simepar.js"],
+      "resources": ["src/simepar.js"],
       "matches": ["https://www.simepar.br/*"]
     },
     {
       "resources": [
-        "./lib/jszip.min.js",
-        "./src/common.js",
-        "./src/logging.js",
-        "./src/downloader.js",
-        "./src/shared.js"
+        "lib/jszip.min.js",
+        "src/common.js",
+        "src/logging.js",
+        "src/downloader.js",
+        "src/shared.js"
       ],
       "matches": [
         "https://www.meteorologia.gov.py/*",
@@ -34,7 +34,7 @@
         "https://www.meteorologia.gov.py/satelite-goes-16*",
         "https://www.simepar.br/simepar/radar_msc*"
       ],
-      "js": ["./src/content.js"]
+      "js": ["src/content.js"]
     }
   ]
 }
