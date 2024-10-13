@@ -16,7 +16,7 @@
     },
     {
       "resources": [
-        "lib/jszip.min.js",
+        "lib/fflate.js",
         "src/common.js",
         "src/logging.js",
         "src/downloader.js",

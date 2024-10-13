@@ -102,7 +102,7 @@ const dmh_tool = {
     console.debug(`starting ${dmh_tool.name}`);
 
     const scripts = [
-      { src: "lib/jszip.min.js", async: true, module: true },
+      { src: "lib/fflate.js", async: true, module: true },
       { src: "src/common.js", async: true, module: true },
       { src: "src/logging.js", async: true, module: true },
       { src: "src/downloader.js", async: true, module: true },
