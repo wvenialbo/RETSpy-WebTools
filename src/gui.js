@@ -19,6 +19,7 @@ class GuiElement {
    * A map of registered event names to their corresponding listener functions.
    */
   #events = {};
+  #display = "block";
 
   /**
    * Creates a new GuiElement instance.
@@ -117,7 +118,7 @@ class GuiElement {
 
   attachEventObserver(name, observer) {
     this.addEventListener(name, (event) => {
-      observer.dispatchEvent(...event);
+      observer.dispatchEvent(event.name, event.parameters);
     });
   }
 
@@ -152,7 +153,10 @@ class GuiElement {
   }
 
   hide() {
-    this.#element.style.display = "none";
+    if (this.#element.style.display !== "none") {
+      this.#display = this.#element.style.display;
+      this.#element.style.display = "none";
+    }
   }
 
   querySelector(node) {
@@ -176,7 +180,7 @@ class GuiElement {
   }
 
   show() {
-    this.#element.style.display = "block";
+    this.#element.style.display = this.#display;
   }
 
   toggle() {
@@ -196,16 +200,18 @@ class GuiElement {
     this.#element.classList.add(...classes);
   }
 
-  set content(content) {
-    if (typeof content == "string") {
-      this.#element.innerHTML = content;
-    } else if (content instanceof Element) {
-      this.#element.innerHTML = content.outerHTML;
-    } else if (content instanceof GuiElement) {
-      this.#element.innerHTML = content.element.outerHTML;
-    } else {
-      throw new TypeError("`content` must be a string, Element, or GuiElement");
+  set content(html) {
+    if (typeof html != "string") {
+      throw new TypeError("`text` must be a string");
     }
+    this.#element.innerHTML = html;
+  }
+
+  set display(display) {
+    if (display == "none") {
+      throw new Error("Use `hide()` method to hide the element");
+    }
+    this.#display = display;
   }
 
   get element() {
@@ -226,6 +232,9 @@ class GuiElement {
   }
 
   set text(text) {
+    if (typeof text != "string") {
+      throw new TypeError("`text` must be a string");
+    }
     this.#element.textContent = text;
   }
 
@@ -240,7 +249,7 @@ class GuiElement {
  * Provides a customizable title and a close button.
  */
 class Titlebar extends GuiElement {
-  #label = GuiElement.create("span.retspy-content");
+  #label = GuiElement.create("span.retspy-label");
 
   /**
    * Constructs a new Titlebar element.
@@ -248,17 +257,37 @@ class Titlebar extends GuiElement {
    * @param {string} title (Optional) The initial title text for the titlebar.
    */
   constructor(title = "") {
-    super(".retspy-titlebar .retspy-titleframe button.retspy-closebutton");
+    super(
+      [
+        ".retspy-header",
+        ".retspy-frame",
+        "button.retspy-button.retspy-help",
+        "button.retspy-button.retspy-info",
+        "button.retspy-button.retspy-close",
+      ].join(" "),
+    );
     this.registerEvent("close");
+    this.registerEvent("help");
+    this.registerEvent("info");
     this.title = title;
 
-    const titleframe = this.querySelector(".retspy-titleframe");
+    const titleframe = this.querySelector(".retspy-frame");
     titleframe.append(this.#label);
 
-    const closebutton = this.querySelector(".retspy-closebutton");
+    const closebutton = this.querySelector(".retspy-close");
     closebutton.registerEvent("close");
     closebutton.entangleEvents("click", "close");
     closebutton.attachEventObserver("close", this);
+
+    const helpbutton = this.querySelector(".retspy-help");
+    helpbutton.registerEvent("help");
+    helpbutton.entangleEvents("click", "help");
+    helpbutton.attachEventObserver("help", this);
+
+    const infobutton = this.querySelector(".retspy-info");
+    infobutton.registerEvent("info");
+    infobutton.entangleEvents("click", "info");
+    infobutton.attachEventObserver("info", this);
   }
 
   /**
@@ -284,7 +313,7 @@ class Statusbar extends GuiElement {
    * Constructs a new Statusbar element.
    */
   constructor() {
-    super(".retspy-statusbar");
+    super(".retspy-footer");
   }
 
   /**
@@ -316,8 +345,8 @@ class Statusbar extends GuiElement {
    */
   static #createSection(type) {
     type = type ? `.${type}` : ".retspy-bevel";
-    const frame = new GuiElement(`.retspy-section span.retspy-content${type}`);
-    const label = frame.querySelectorAll(".retspy-content");
+    const frame = new GuiElement(`.retspy-frame span.retspy-label${type}`);
+    const label = frame.querySelectorAll(".retspy-label");
     return { frame, label };
   }
 
@@ -362,16 +391,16 @@ class Statusbar extends GuiElement {
   }
 }
 
-class PanelWindow extends GuiElement {
-  #body = GuiElement.create(".retspy-content");
+class DialogWindow extends GuiElement {
+  #body = GuiElement.create(".retspy-body");
   #statusbar = new Statusbar();
   #titlebar = new Titlebar();
 
   constructor(id, size = [400, 300]) {
-    super(".retspy-panel");
+    id = id ? `#${id}` : "";
+    super(`${id}.retspy-dialog`);
     this.registerEvent("close");
     this.size = size;
-    this.id = id;
 
     this.append([this.#titlebar, this.#body, this.#statusbar]);
     this.#titlebar.attachEventObserver("close", this);
@@ -401,8 +430,9 @@ class PanelWindow extends GuiElement {
 class ModalWall extends GuiElement {
   #container;
 
-  constructor() {
-    super(".retspy-modal .retspy-content");
+  constructor(id) {
+    id = id ? `#${id}` : "";
+    super(`${id}.retspy-modal .retspy-content`);
     this.#container = this.querySelector(".retspy-content");
   }
 
@@ -411,4 +441,4 @@ class ModalWall extends GuiElement {
   }
 }
 
-export { GuiElement, ModalWall, PanelWindow, Statusbar, Titlebar };
+export { DialogWindow, GuiElement, ModalWall, Statusbar, Titlebar };
