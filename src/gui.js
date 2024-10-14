@@ -195,12 +195,28 @@ class GuiElement {
     return this.#element.style.display != "none";
   }
 
+  get classes() {
+    return [...this.#element.classList];
+  }
+
   set classes(classes) {
     classes = Array.isArray(classes) ? classes : [classes];
     this.#element.classList.add(...classes);
   }
 
-  set content(html) {
+  get clientHeight() {
+    return this.#element.clientHeight;
+  }
+
+  get clientWidth() {
+    return this.#element.clientWidth;
+  }
+
+  get html() {
+    return this.#element.innerHTML;
+  }
+
+  set html(html) {
     if (typeof html != "string") {
       throw new TypeError("`text` must be a string");
     }
@@ -218,6 +234,10 @@ class GuiElement {
     return this.#element;
   }
 
+  get height() {
+    return this.#element.style.height;
+  }
+
   set height(height) {
     this.#element.style.height =
       typeof height == "number" ? `${height}px` : height;
@@ -231,11 +251,19 @@ class GuiElement {
     [this.width, this.height] = size;
   }
 
+  get text() {
+    return this.#element.textContent;
+  }
+
   set text(text) {
     if (typeof text != "string") {
       throw new TypeError("`text` must be a string");
     }
     this.#element.textContent = text;
+  }
+
+  get width() {
+    return this.#element.style.width;
   }
 
   set width(width) {
