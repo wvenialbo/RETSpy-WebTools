@@ -1,0 +1,196 @@
+/* Modal background and container */
+
+.retspy-modal {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: none;
+    bottom: 0;
+    display: grid;
+    height: 100%;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.retspy-modal>.retspy-content {
+    align-items: center;
+    background-color: #555555;
+    border: none;
+    display: flex;
+    height: 400px;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    position: static;
+    width: 500px;
+    z-index: 0;
+}
+
+/* Dialog window (styles that do not depend on location) */
+
+.retspy-dialog {
+    background: none;
+    border-color: #cccccc;
+    /*border-radius: 6px;*/
+    border-style: solid;
+    border-width: 1px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    margin: 0;
+    padding: 0;
+    position: static;
+    width: 400px;
+    z-index: 0;
+}
+
+/* Title and status bars (styles that do not depend on location) */
+
+.retspy-header,
+.retspy-footer {
+    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+}
+
+/* Title and status bars components (styles that do not depend on location) */
+
+.retspy-frame {
+    display: table;
+}
+
+.retspy-frame>.retspy-label {
+    background-color: transparent;
+    border-color: transparent;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.retspy-header>.retspy-frame,
+.retspy-footer>.retspy-frame {
+    background-color: #aaaaaa;
+    /*background-color: transparent;*/
+    border-color: transparent;
+    text-align: left;
+}
+
+/* Title bar components (styles that do not depend on location) */
+
+.retspy-header>.retspy-frame,
+.retspy-header>.retspy-button {
+    height: 100%;
+    margin: 0;
+}
+
+.retspy-header>.retspy-frame {
+    /*border-radius: 6px;*/
+    border-style: none;
+    border-width: 0;
+    flex-grow: 1;
+    order: 0;
+}
+
+.retspy-header>.retspy-button {
+    aspect-ratio: 1;
+    display: block;
+    padding: 0;
+}
+
+.retspy-header>.retspy-help,
+.retspy-header>.retspy-info {
+    display: none;
+}
+
+.retspy-close:before {
+    content: "×";
+}
+
+.retspy-help:before {
+    content: "?";
+}
+
+.retspy-info:before {
+    content: "i";
+}
+
+/* Status bar components (styles that do not depend on location) */
+
+.retspy-footer>.retspy-frame:not(:first-child) {
+    border-left: 2px solid #444444;
+    margin-left: 12px;
+}
+
+.retspy-footer .retspy-flat {
+    background-color: transparent;
+}
+
+.retspy-footer .retspy-bevel {
+    background-color: transparent;
+}
+
+/* Title bar on dialog */
+
+.retspy-dialog>.retspy-header {
+    background-color: #337ab7;
+    border-color: #337ab7;
+    border-radius: 6px;
+    border: none;
+    height: 26px;
+    order: 0;
+}
+
+.retspy-dialog>.retspy-header>.retspy-frame {
+    /*border-radius: 6px;*/
+    border: none;
+    /*padding: 4px 12px;*/
+}
+
+.retspy-dialog>.retspy-header .retspy-label {
+    /*color: #ffffff;*/
+    font-weight: normal;
+}
+
+.retspy-dialog>.retspy-header .retspy-button {
+    background-color: #cccccc;
+    /*background-color: #2E318E;*/
+    /* background: none; */
+    /*border-color: #2E318E;*/
+    /*border-radius: 6px;*/
+    cursor: pointer;
+}
+
+/* Status bar on dialog */
+
+.retspy-dialog>.retspy-footer {
+    /*background-color: #f0f0f0;*/
+    background-color: #888888;
+    height: 24px;
+    order: 2;
+    /*padding: 10px;*/
+    padding: 0;
+}
+
+/* Dialog body (styles that do not depend on location) */
+
+.retspy-dialog>.retspy-body {
+    align-content: center;
+    align-items: center;
+    background-color: #eeeeee;
+    border: none;
+    display: grid;
+    flex-grow: 1;
+    justify-content: center;
+    justify-items: center;
+    order: 1;
+    overflow-y: hidden;
+    /*padding: 4px 12px;*/
+}
