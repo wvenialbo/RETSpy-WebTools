@@ -110,9 +110,7 @@ class GuiElement {
   }
 
   addEventListener(name, listener) {
-    if (!(name in this.#events)) {
-      throw new Error(`Event "${name}" not registered`);
-    }
+    this.#throwIfNotRegistered(name);
     this.#events[name].push(listener);
   }
 
@@ -137,16 +135,19 @@ class GuiElement {
     }
   }
 
-  entangleEvents(source, destination) {
-    this.#element.addEventListener(source, (event) => {
-      this.dispatchEvent(destination, event);
-    });
+  entangleEvents(source, destination, selector) {
+    const targets = selector
+      ? this.#querySelectorAll(selector)
+      : [this.#element];
+    for (const target of targets) {
+      target.addEventListener(source, (event) => {
+        this.dispatchEvent(destination, event);
+      });
+    }
   }
 
   dispatchEvent(name, parameters) {
-    if (!(name in this.#events)) {
-      throw new Error(`Event "${name}" not registered`);
-    }
+    this.#throwIfNotRegistered(name);
     for (const listener of this.#events[name]) {
       listener({ name, parameters });
     }
@@ -159,20 +160,35 @@ class GuiElement {
     }
   }
 
-  querySelector(node) {
-    return GuiElement.create(this.#element.querySelector(node));
+  querySelector(selector) {
+    return GuiElement.create(this.#element.querySelector(selector));
   }
 
-  querySelectorAll(node) {
-    const elements = this.#element.querySelectorAll(node);
-    return [...elements].map((element) => GuiElement.create(element));
+  querySelectorAll(selector) {
+    const elements = this.#querySelectorAll(selector);
+    return elements.map((element) => GuiElement.create(element));
+  }
+
+  #querySelectorAll(selector) {
+    const elements = this.#element.querySelectorAll(selector);
+    return [...elements];
   }
 
   registerEvent(name) {
-    if (name in this.#events) {
+    if (this.#isRegistered(name)) {
       throw new Error(`Event "${name}" already registered`);
     }
     this.#events[name] = [];
+  }
+
+  #isRegistered(name) {
+    return name in this.#events;
+  }
+
+  #throwIfNotRegistered(name) {
+    if (!this.#isRegistered(name)) {
+      throw new Error(`Event "${name}" not registered`);
+    }
   }
 
   resize(width, height) {
