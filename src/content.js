@@ -106,6 +106,7 @@ const dmh_tool = {
       { src: "src/common.js", async: true, module: true },
       { src: "src/logging.js", async: true, module: true },
       { src: "src/downloader.js", async: true, module: true },
+      { src: "src/gui.js", async: true, module: true },
       { src: "src/shared.js", async: true, module: true },
       { src: "src/dmh.js", async: true, module: true },
     ];

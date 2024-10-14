@@ -20,6 +20,7 @@
         "src/common.js",
         "src/logging.js",
         "src/downloader.js",
+        "src/gui.js",
         "src/shared.js"
       ],
       "matches": [
