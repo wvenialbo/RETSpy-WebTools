@@ -38,7 +38,5 @@ jspm_packages
 
 build
 dist
-dmh.css
-dmh.js
 package-lock.json
 simepar.js
