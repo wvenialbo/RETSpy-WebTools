@@ -300,16 +300,12 @@ class Titlebar extends GuiElement {
    *
    * @param {string} title (Optional) The initial title text for the titlebar.
    */
-  constructor(title = "") {
-    super(
-      [
-        ".retspy-header",
-        ".retspy-frame",
-        "button.retspy-button.retspy-help",
-        "button.retspy-button.retspy-info",
-        "button.retspy-button.retspy-close",
-      ].join(" "),
-    );
+  constructor(title = "", buttons = ["help", "info", "close"]) {
+    const selectors = [".retspy-header", ".retspy-frame"];
+    for (const button of buttons) {
+      selectors.push(`button.retspy-button.retspy-${button}`);
+    }
+    super(selectors.join(" "));
     const titleframe = this.querySelector(".retspy-frame");
     titleframe.append(this.#label);
     this.title = title;
@@ -337,8 +333,11 @@ class Statusbar extends GuiElement {
   /**
    * Constructs a new Statusbar element.
    */
-  constructor() {
+  constructor(sections = [["", "auto"]]) {
     super(".retspy-footer");
+    for (const section of sections) {
+      this.addSection(...section);
+    }
   }
 
   /**
