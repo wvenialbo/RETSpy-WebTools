@@ -310,28 +310,9 @@ class Titlebar extends GuiElement {
         "button.retspy-button.retspy-close",
       ].join(" "),
     );
-    this.registerEvent("close");
-    this.registerEvent("help");
-    this.registerEvent("info");
-    this.title = title;
-
     const titleframe = this.querySelector(".retspy-frame");
     titleframe.append(this.#label);
-
-    const closebutton = this.querySelector(".retspy-close");
-    closebutton.registerEvent("close");
-    closebutton.entangleEvents("click", "close");
-    closebutton.attachEventObserver("close", this);
-
-    const helpbutton = this.querySelector(".retspy-help");
-    helpbutton.registerEvent("help");
-    helpbutton.entangleEvents("click", "help");
-    helpbutton.attachEventObserver("help", this);
-
-    const infobutton = this.querySelector(".retspy-info");
-    infobutton.registerEvent("info");
-    infobutton.entangleEvents("click", "info");
-    infobutton.attachEventObserver("info", this);
+    this.title = title;
   }
 
   /**
@@ -440,14 +421,36 @@ class DialogWindow extends GuiElement {
   #statusbar = new Statusbar();
   #titlebar = new Titlebar();
 
-  constructor(id, size = [400, 300]) {
-    id = id ? `#${id}` : "";
+  constructor(id = "", size = [400, 300]) {
+    [id, size] = DialogWindow.#getParams(id, size);
     super(`${id}.retspy-dialog`);
-    this.registerEvent("close");
-    this.size = size;
-
     this.append([this.#titlebar, this.#body, this.#statusbar]);
-    this.#titlebar.attachEventObserver("close", this);
+    this.size = size;
+  }
+
+  static #getParams(id, size) {
+    if (typeof id !== "string" && !Array.isArray(id)) {
+      throw new TypeError("First argument must be a string or an array");
+    }
+    if (!Array.isArray(size)) {
+      throw new TypeError("Second argument must be an array");
+    }
+    if (Array.isArray(id)) {
+      // If first argument`, `id`, is an array assume it is `size`
+      [size, id] = [id, ""];
+    }
+    if (
+      size.length !== 2 ||
+      !size.every((item) => {
+        return typeof item === "number" || typeof item === "string";
+      })
+    ) {
+      throw new TypeError(
+        "Second argument must be an array of 2 numbers or strings",
+      );
+    }
+    id = id ? `#${id}` : "";
+    return [id, size];
   }
 
   get body() {
