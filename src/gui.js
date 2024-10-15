@@ -287,6 +287,24 @@ class GuiElement {
   }
 }
 
+// Simple elements
+
+class Button extends GuiElement {
+  /**
+   * Constructs a new Button element.
+   *
+   * @param {string} text (Optional) The initial text content of the button.
+   * @param {string} selectors (Optional) An optional ID and zero or more CSS
+   *        class names to apply to the button.
+   */
+  constructor(text = "", selectors = "") {
+    super(`button${selectors}`);
+    this.text = text;
+  }
+}
+
+// Components and small widgets
+
 /**
  * Represents a titlebar element for a GUI application.
  *
@@ -415,6 +433,8 @@ class Statusbar extends GuiElement {
   }
 }
 
+// Windows, dialogs and complex widgets
+
 class DialogWindow extends GuiElement {
   #body = GuiElement.create(".retspy-body");
   #statusbar = new Statusbar();
@@ -473,6 +493,8 @@ class DialogWindow extends GuiElement {
   }
 }
 
+// Auxiliary widgets
+
 class ModalWall extends GuiElement {
   #container;
 
@@ -487,4 +509,4 @@ class ModalWall extends GuiElement {
   }
 }
 
-export { DialogWindow, GuiElement, ModalWall, Statusbar, Titlebar };
+export { Button, DialogWindow, GuiElement, ModalWall, Statusbar, Titlebar };
