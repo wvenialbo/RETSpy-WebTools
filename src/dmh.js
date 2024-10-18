@@ -1,13 +1,15 @@
 // @ ts-check
 import { dict, zip } from "./common.js";
 import {
+  ARC_TYPE,
+  ARCHIVE,
   FileDownloader,
   IMAGE,
   ImageDownloader,
   VIDEO,
   VideoDownloader,
 } from "./downloader.js";
-import { DialogWindow, ModalWall } from "./gui.js";
+import { Button, DialogWindow, ModalWall } from "./gui.js";
 import { DateUtils, FilenameUtils } from "./shared.js";
 
 const _PAR_ = "PAR";
@@ -110,7 +112,7 @@ function main() {
   let fdl = new SatelliteDownloader(range.urls);
   // fdl.downloadFiles(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
   // fdl.downloadImages(fln, zfn, IMAGE.JPG, ARCHIVE.ZIP);
-  // fdl.downloadVideo("video.mp4", 4, _MP4_);
+  // fdl.downloadVideo("video.mp4", 4, VIDEO.MP4);
 
   // const begin = new Date("2024-06-15T00:24:32-04:00");
   // const end = new Date("2024-06-16T01:26:41-04:00");
@@ -472,28 +474,31 @@ Fax: +595 21 438 1220
 class Dashboard extends ModalWall {
   constructor(width, height) {
     super();
+    this.hide();
+    document.body.append(this.element);
 
     this.panel = new DialogWindow("", [width, height]); //#1A213D #2E318E
     this.panel.title = "RETSpy — Panel de descarga de imágenes";
-    this.panel.addEventListener("close", () => this.hide());
     this.body.append(this.panel);
 
-    this.hide();
+    this.registerEvent("close");
+    this.addEventListener("close", () => this.hide());
+    this.entangleEvents("click", "close", ".retspy-close");
+
     this.button = Dashboard.#createButton(this);
-    document.body.append(this.element);
   }
 
   static #createButton(dashboard) {
-    const newButton = document.createElement("button");
-    newButton.textContent = "Panel RETSpy";
-    newButton.classList.add("btn", "btn-default");
-    newButton.addEventListener("click", (_) => dashboard.toggle());
+    const button = new Button("Panel RETSpy", ".btn.btn-default");
+    button.registerEvent("open");
+    button.addEventListener("open", () => dashboard.toggle());
+    button.entangleEvents("click", "open");
 
     const buttonContainer = document.querySelector(".row .btn-group");
     const lastButton = buttonContainer.querySelector("a:last-child");
-    buttonContainer.insertBefore(newButton, lastButton.nextSibling);
+    buttonContainer.insertBefore(button.element, lastButton.nextSibling);
 
-    return newButton;
+    return button;
   }
 }
 

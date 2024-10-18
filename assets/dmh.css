@@ -19,7 +19,7 @@
 
 .retspy-modal>.retspy-content {
     align-items: center;
-    background-color: #555555;
+    background-color: transparent;
     border: none;
     display: flex;
     height: 400px;
@@ -34,12 +34,11 @@
 /* Dialog window (styles that do not depend on location) */
 
 .retspy-dialog {
-    background: none;
+    background-color: #eeeeee;
     border-color: #cccccc;
-    /*border-radius: 6px;*/
+    border-radius: 6px;
     border-style: solid;
     border-width: 1px;
-    border: none;
     display: flex;
     flex-direction: column;
     height: 300px;
@@ -77,8 +76,7 @@
 
 .retspy-header>.retspy-frame,
 .retspy-footer>.retspy-frame {
-    background-color: #aaaaaa;
-    /*background-color: transparent;*/
+    background-color: transparent;
     border-color: transparent;
     text-align: left;
 }
@@ -92,7 +90,7 @@
 }
 
 .retspy-header>.retspy-frame {
-    /*border-radius: 6px;*/
+    border-radius: 6px;
     border-style: none;
     border-width: 0;
     flex-grow: 1;
@@ -101,24 +99,42 @@
 
 .retspy-header>.retspy-button {
     aspect-ratio: 1;
+    color: #ffffff;
+    cursor: pointer;
     display: block;
+    font-weight: bold;
     padding: 0;
+}
+
+.retspy-header>.retspy-close {
+    background-color: #ff3636;
+    border-top-right-radius: 6px;
+}
+
+.retspy-header>.retspy-help {
+    background-color: #456beb;
+}
+
+.retspy-header>.retspy-info {
+    background-color: #8eeb45;
 }
 
 .retspy-header>.retspy-help,
 .retspy-header>.retspy-info {
-    display: none;
+    /*border-color: #2E318E;*/
+    /* display: none; */
+    font-family: 'Courier New', Courier, monospace;
 }
 
-.retspy-close:before {
+.retspy-header>.retspy-close:before {
     content: "×";
 }
 
-.retspy-help:before {
+.retspy-header>.retspy-help:before {
     content: "?";
 }
 
-.retspy-info:before {
+.retspy-header>.retspy-info:before {
     content: "i";
 }
 
@@ -127,6 +143,7 @@
 .retspy-footer>.retspy-frame:not(:first-child) {
     border-left: 2px solid #444444;
     margin-left: 12px;
+    padding-left: 6px;
 }
 
 .retspy-footer .retspy-flat {
@@ -142,41 +159,32 @@
 .retspy-dialog>.retspy-header {
     background-color: #337ab7;
     border-color: #337ab7;
-    border-radius: 6px;
-    border: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     height: 26px;
     order: 0;
 }
 
 .retspy-dialog>.retspy-header>.retspy-frame {
-    /*border-radius: 6px;*/
-    border: none;
-    /*padding: 4px 12px;*/
+    border-radius: 6px;
+    padding: 0 12px;
 }
 
 .retspy-dialog>.retspy-header .retspy-label {
-    /*color: #ffffff;*/
+    color: #ffffff;
     font-weight: normal;
-}
-
-.retspy-dialog>.retspy-header .retspy-button {
-    background-color: #cccccc;
-    /*background-color: #2E318E;*/
-    /* background: none; */
-    /*border-color: #2E318E;*/
-    /*border-radius: 6px;*/
-    cursor: pointer;
 }
 
 /* Status bar on dialog */
 
 .retspy-dialog>.retspy-footer {
-    /*background-color: #f0f0f0;*/
-    background-color: #888888;
+    background-color: #87a7c3;
+    border-color: #87a7c3;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
     height: 24px;
     order: 2;
-    /*padding: 10px;*/
-    padding: 0;
+    padding: 0 12px;
 }
 
 /* Dialog body (styles that do not depend on location) */
@@ -192,5 +200,5 @@
     justify-items: center;
     order: 1;
     overflow-y: hidden;
-    /*padding: 4px 12px;*/
+    padding: 4px 12px;
 }
