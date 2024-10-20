@@ -1,26 +1,27 @@
 {
-    // Python editor settings
-    "[python]": {
+    // JavaScript editor settings
+    "[javascript]": {
         "editor.codeActionsOnSave": {
-            "source.convertImportFormat": "explicit",
-            "source.fixAll": "explicit",
-            "source.fixAll.isort": "explicit",
-            "source.fixAll.ruff": "explicit",
-            "source.fixall.pylance": "explicit",
-            "source.organizeImports": "explicit",
-            "source.organizeImports.ruff": "never",
-            "source.unusedImports": "explicit"
+            "source.convertImportFormat": "always",
+            "source.fixAll": "always",
+            "source.organizeImports": "always",
+            "source.unusedImports": "explicit",
+            "source.fixAll.eslint": "always",
         },
         "editor.colorDecorators": true,
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": false,
         "editor.rulers": [
             72, // docstrings
             79 // code
-        ]
+        ],
     },
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+    ],
     // General editor settings
     "editor.accessibilitySupport": "off",
     "editor.acceptSuggestionOnEnter": "smart",
@@ -73,47 +74,11 @@
             }
         ]
     },
+    "eslint.format.enable": true,
     "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 10000,
+    "files.autoSaveDelay": 5000,
     "files.eol": "\n",
     "window.zoomLevel": -1,
-    // Python linting tools settings
-    "flake8.interpreter": [
-        "${workspaceFolder}\\.venv\\Scripts\\python.exe"
-    ],
-    "flake8.args": [
-        // "--per-file-ignores=__init__.py:F401",
-        // "--extend-ignore=D100,D101,D102,D103,D104,D105,D107,E203,N802,N803,N806,S101,S301,S311,S403",
-    ],
-    "mypy-type-checker.args": [
-        "--follow-imports=silent",
-        "--ignore-missing-imports",
-        "--show-column-numbers",
-        "--no-pretty",
-        "--check-untyped-defs"
-    ],
-    "pylint.args": [],
-    // Python formatting tools settings
-    "autopep8.args": [
-        "--max-line-length=79"
-    ],
-    "black-formatter.args": [
-        "--line-length=79"
-    ],
-    "yapf.args": [
-        "--style={based_on_style: google, column_limit: 79, indent_width: 4}"
-    ],
-    "isort.args": [
-        "--profile",
-        "black"
-    ],
-    "isort.check": true,
-    "ruff.lint.args": [
-        "--line-length",
-        "79"
-    ],
-    "ruff.fixAll": true,
-    "ruff.organizeImports": false,
     // General formatting tools settings
     "betterAlign.indentBase": "activeline",
     "betterAlign.surroundSpace": {
@@ -131,45 +96,12 @@
         ],
         "comment": 2
     },
-    // Python analysis tools settings
-    "python.analysis.autoFormatStrings": true,
-    "python.analysis.autoImportCompletions": true,
-    "python.analysis.completeFunctionParens": true,
-    "python.analysis.enableSyncServer": false,
-    "python.analysis.fixAll": [
-        "source.convertImportFormat",
-        "source.unusedImports"
-    ],
-    "python.analysis.importFormat": "relative",
-    "python.analysis.indexing": true,
-    "python.analysis.inlayHints.functionReturnTypes": true,
-    "python.analysis.inlayHints.pytestParameters": true,
-    "python.analysis.inlayHints.variableTypes": true,
-    "python.analysis.logLevel": "Information",
-    "python.analysis.persistAllIndices": true,
-    "python.analysis.stubPath": "",
-    "python.analysis.typeCheckingMode": "strict",
-    "python.analysis.useLibraryCodeForTypes": true,
-    "python.languageServer": "Pylance",
-    // Python testing tools settings
-    "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        "./tests",
-        "-p",
-        "test_*.py"
-    ],
-    "python.testing.unittestEnabled": true,
     "testing.showCoverageInExplorer": true,
     "coverage-gutters.showLineCoverage": true,
     "coverage-gutters.showRulerCoverage": true,
     "coverage-gutters.showGutterCoverage": false,
     "coverage-gutters.coverageReportFileName": "./htmlcov/index.html",
     "coverage-gutters.coverageBaseDir": "./",
-    // Python debugging tools settings
-    "python.terminal.activateEnvironment": true,
-    "python.terminal.activateEnvInCurrentTerminal": true,
-    "python.terminal.executeInFileDir": true,
     "terminal.integrated.defaultProfile.windows": "PowerShell",
     "terminal.integrated.profiles.windows": {
         "PowerShell": {
@@ -191,25 +123,42 @@
             "path": "${env:windir}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
         }
     },
-    // Python general tools settings
-    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv",
-    "python.globalModuleInstallation": false,
     // JSON editor settings
     "[json]": {
         "editor.codeActionsOnSave": {
+            "source.convertImportFormat": "always",
+            "source.fixAll": "always",
+            "source.organizeImports": "always",
+            "source.unusedImports": "explicit",
             "source.fixAll.eslint": "always",
-            "source.organizeImports": "always"
         },
         "editor.colorDecorators": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": false,
+        "editor.rulers": [
+            72, // docstrings
+            79 // code
+        ],
     },
     "[jsonc]": {
         "editor.codeActionsOnSave": {
+            "source.convertImportFormat": "always",
+            "source.fixAll": "always",
+            "source.organizeImports": "always",
+            "source.unusedImports": "explicit",
             "source.fixAll.eslint": "always",
-            "source.organizeImports": "always"
         },
         "editor.colorDecorators": true,
-        "editor.defaultFormatter": "vscode.json-language-features"
+        "editor.defaultFormatter": "vscode.json-language-features",
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": false,
+        "editor.rulers": [
+            72, // docstrings
+            79 // code
+        ],
     },
     // MarkDown editor settings
     "[markdown]": {
@@ -220,18 +169,6 @@
             "strings": "off"
         }
     },
-    // JavaScript editor settings
-    "[javascript]": {
-        "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": "always",
-            "source.organizeImports": "always"
-        },
-        "editor.colorDecorators": true,
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-    },
-    "eslint.validate": [
-        "javascript"
-    ],
     // HTML editor settings
     "[html]": {
         "editor.colorDecorators": true,
@@ -431,6 +368,5 @@
     ],
     // VSCode specifics settings
     "json.schemaDownload.enable": true,
-    "eslint.format.enable": true
     // End of settings.json
 }
