@@ -563,7 +563,11 @@ class Dashboard extends ModalWall {
 
     const button = new Button("▼", ".btn.btn-default");
     button.registerEvent("open-popup");
-    button.addEventListener("open-popup", () => popup.toggle());
+    button.addEventListener("open-popup", (data) => {
+      popup.toggle();
+      const event = data.parameters;
+      event.stopPropagation();
+    });
     button.entangleEvents("click", "open-popup");
 
     const buttonContainer = document.querySelector(".row .btn-group");
@@ -597,6 +601,13 @@ class Dashboard extends ModalWall {
       button.addEventListener("close-popup", () => popup.toggle());
       button.entangleEvents("click", "close-popup");
     }
+
+    document.addEventListener("click", (event) => {
+      console.log({ event });
+      if (!popup.element.contains(event.target) && popup.visible()) {
+        popup.hide();
+      }
+    });
 
     return popup;
   }
