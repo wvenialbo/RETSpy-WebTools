@@ -710,5 +710,4 @@ export {
   GuiElement,
   LinkButton,
   ModalWall,
-  Statusbar,
 };
