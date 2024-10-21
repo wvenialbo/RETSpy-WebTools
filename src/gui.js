@@ -311,6 +311,14 @@ class GuiElement {
 
 // Simple elements
 
+class FormInput extends GuiElement {
+  constructor(type, selector = "") {
+    BaseButton.raiseIfNoTagname(selector);
+    super(selector);
+    this.element.type = type;
+  }
+}
+
 class BaseButton extends GuiElement {
   /**
    * Constructs a new BaseButton element.
