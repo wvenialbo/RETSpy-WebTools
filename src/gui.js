@@ -513,11 +513,16 @@ class BaseWindow extends GuiElement {
 
   constructor(source, body, titlebar, statusbar) {
     super(source);
-    this.append([titlebar, body, statusbar].filter(Boolean));
 
-    this.#body = body ?? GuiElement.create();
-    this.#titlebar = titlebar ?? GuiElement.create();
-    this.#statusbar = statusbar ?? GuiElement.create();
+    body = body ?? GuiElement.create();
+    titlebar = titlebar ?? GuiElement.create();
+    statusbar = statusbar ?? GuiElement.create();
+
+    this.append([titlebar, body, statusbar]);
+
+    this.#body = body;
+    this.#titlebar = titlebar;
+    this.#statusbar = statusbar;
   }
 
   get body() {
