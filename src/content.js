@@ -81,7 +81,7 @@ class InjectionTarget {
 
   static #onError(url, event, reject) {
     let message = `unable to load '${url}'`;
-    if (event && event.message) {
+    if (event?.message) {
       message = `${message}: ${event.message}`;
     }
     console.error(message);
