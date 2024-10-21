@@ -18,7 +18,10 @@ import {
 } from "./gui.js";
 import { DateUtils, FilenameUtils } from "./shared.js";
 
+const _MER_ = "MER";
 const _PAR_ = "PAR";
+const _SEC_ = "SEC";
+
 const _BAND13_ = "BAND13";
 
 const dmh_settings = {
@@ -73,7 +76,7 @@ const dmh_settings = {
     root: "https://www.meteorologia.gov.py/satelite-goes-16",
     sector: {
       current: _PAR_,
-      supported: [_PAR_, "MER", "SEC"],
+      supported: [_PAR_, _MER_, _SEC_],
     },
     interval: 10 * 60 * 1000,
     type: {
