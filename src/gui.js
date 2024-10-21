@@ -508,17 +508,19 @@ class Statusbar extends GuiElement {
 
 class BaseWindow extends GuiElement {
   #body;
+  #content;
   #statusbar;
   #titlebar;
 
   constructor(source, body, titlebar, statusbar) {
-    super(source);
+    super(`${source} div`);
 
     body = body ?? GuiElement.create();
     titlebar = titlebar ?? GuiElement.create();
     statusbar = statusbar ?? GuiElement.create();
 
-    this.append([titlebar, body, statusbar]);
+    this.#content = this.querySelector("div");
+    this.#content.append([titlebar, body, statusbar]);
 
     this.#body = body;
     this.#titlebar = titlebar;
@@ -527,6 +529,10 @@ class BaseWindow extends GuiElement {
 
   get body() {
     return this.#body;
+  }
+
+  get content() {
+    return this.#content;
   }
 
   set status(text) {
@@ -664,5 +670,6 @@ export {
   LinkButton,
   ModalWall,
   Statusbar,
-  Titlebar,
+  Titlebar
 };
+
