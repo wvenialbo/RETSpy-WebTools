@@ -266,8 +266,8 @@ class LoggerStore {
    */
   static #defaultFormatter(log) {
     return (
-      `${log.timestamp} [${log.level}] - ${log.module} :` +
-      ` (${log.code}) ${log.message}`
+      `${log.timestamp.toISOString()} [${log.level}] - ` +
+      `${log.module} : (${log.code}) ${log.message}`
     );
   }
 
