@@ -603,7 +603,6 @@ class Dashboard extends ModalWall {
     }
 
     document.addEventListener("click", (event) => {
-      console.log({ event });
       if (!popup.element.contains(event.target) && popup.visible()) {
         popup.hide();
       }
