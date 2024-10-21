@@ -538,7 +538,9 @@ class Dashboard extends ModalWall {
     const button1 = new Button("Descarga Por Fecha", ".btn.btn-default");
     const button2 = new Button("Descarga Avanzada", ".btn.btn-default");
 
-    const group = new ButtonGroup(".btn-group.btn-group-vertical.btn-group-sm");
+    const group = new ButtonGroup(
+      ".retspy-menu.btn-group.btn-group-vertical.btn-group-sm",
+    );
     group.append([button1, button2]);
 
     const popup = new GuiElement("div#retspy-menu.retspy-popup-menu");
