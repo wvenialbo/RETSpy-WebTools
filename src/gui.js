@@ -362,42 +362,6 @@ class LinkButton extends BaseButton {
   }
 }
 
-class ButtonGroup extends GuiElement {
-  constructor(selector = "") {
-    super(`div${selector}`);
-    this.element.role = "group";
-  }
-
-  addButton(text = "", selector = "") {
-    return this.#createButton(Button, text, selector);
-  }
-
-  addLinkButton(text = "", selector = "") {
-    return this.#createButton(LinkButton, text, selector);
-  }
-
-  append(button) {
-    const buttons = Array.isArray(button) ? button : [button];
-    for (const button of buttons) {
-      this.#appendButton(button);
-    }
-  }
-
-  #appendButton(button) {
-    if (button instanceof BaseButton) {
-      super.append(button);
-    } else {
-      throw new TypeError("ButtonGroup can only contain BaseButton instances");
-    }
-  }
-
-  #createButton(type, text, selector) {
-    const button = new type(text, selector);
-    this.append(button);
-    return button;
-  }
-}
-
 // Components and small widgets
 
 /**
@@ -589,6 +553,42 @@ class DialogWindow extends GuiElement {
 }
 
 // Auxiliary widgets
+
+class ButtonGroup extends GuiElement {
+  constructor(selector = "") {
+    super(`div${selector}`);
+    this.element.role = "group";
+  }
+
+  addButton(text = "", selector = "") {
+    return this.#createButton(Button, text, selector);
+  }
+
+  addLinkButton(text = "", selector = "") {
+    return this.#createButton(LinkButton, text, selector);
+  }
+
+  append(button) {
+    const buttons = Array.isArray(button) ? button : [button];
+    for (const button of buttons) {
+      this.#appendButton(button);
+    }
+  }
+
+  #appendButton(button) {
+    if (button instanceof BaseButton) {
+      super.append(button);
+    } else {
+      throw new TypeError("ButtonGroup can only contain BaseButton instances");
+    }
+  }
+
+  #createButton(type, text, selector) {
+    const button = new type(text, selector);
+    this.append(button);
+    return button;
+  }
+}
 
 class ModalWall extends GuiElement {
   #container;
