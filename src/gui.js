@@ -314,6 +314,12 @@ class BaseButton extends GuiElement {
     super(selector);
     this.text = text;
   }
+
+  static raiseIfHasTagname(selector) {
+    if (selector && selector[0] != "." && selector[0] != "#") {
+      throw new SyntaxError("Button selector must not start with a tag name");
+    }
+  }
 }
 
 class Button extends BaseButton {
@@ -325,9 +331,7 @@ class Button extends BaseButton {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    if (selector && selector[0] != "." && selector[0] != "#") {
-      throw new SyntaxError("Button selector must not start with a tag name");
-    }
+    BaseButton.raiseIfHasTagname(selector);
     super(text, `button${selector}`);
   }
 }
@@ -341,11 +345,7 @@ class LinkButton extends BaseButton {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    if (selector && selector[0] != "." && selector[0] != "#") {
-      throw new SyntaxError(
-        "Link button selector must not start with a tag name",
-      );
-    }
+    BaseButton.raiseIfHasTagname(selector);
     super(text, `a${selector}`);
   }
 }
@@ -563,5 +563,6 @@ export {
   LinkButton,
   ModalWall,
   Statusbar,
-  Titlebar,
+  Titlebar
 };
+
