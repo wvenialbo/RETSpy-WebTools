@@ -104,7 +104,7 @@ class GuiElement {
     const pattern = /^([a-z]+)?(#[\w-]+)?((?:\.[\w-]+)*)$/;
     let [tagName, id, classSelector] = specification.match(pattern).slice(1);
     tagName = tagName || "div";
-    id = id || "";
+    id = id ?? "";
     const classNames = classSelector ? classSelector.split(".").slice(1) : [];
     return [tagName, id, classNames];
   }
@@ -506,41 +506,18 @@ class Statusbar extends GuiElement {
 
 // Windows, dialogs and complex widgets
 
-class DialogWindow extends GuiElement {
-  #body = GuiElement.create(".retspy-body");
-  #statusbar = new Statusbar();
-  #titlebar = new Titlebar();
+class BaseWindow extends GuiElement {
+  #body;
+  #statusbar;
+  #titlebar;
 
-  constructor(id = "", size = [400, 300]) {
-    [id, size] = DialogWindow.#getParams(id, size);
-    super(`${id}.retspy-dialog`);
-    this.append([this.#titlebar, this.#body, this.#statusbar]);
-    this.size = size;
-  }
+  constructor(source, body, titlebar, statusbar) {
+    super(source);
+    this.append([titlebar, body, statusbar].filter(Boolean));
 
-  static #getParams(id, size) {
-    if (typeof id !== "string" && !Array.isArray(id)) {
-      throw new TypeError("First argument must be a string or an array");
-    }
-    if (!Array.isArray(size)) {
-      throw new TypeError("Second argument must be an array");
-    }
-    if (Array.isArray(id)) {
-      // If first argument`, `id`, is an array assume it is `size`
-      [size, id] = [id, ""];
-    }
-    if (
-      size.length !== 2 ||
-      !size.every((item) => {
-        return typeof item === "number" || typeof item === "string";
-      })
-    ) {
-      throw new TypeError(
-        "Second argument must be an array of 2 numbers or strings",
-      );
-    }
-    id = id ? `#${id}` : "";
-    return [id, size];
+    this.#body = body ?? GuiElement.create();
+    this.#titlebar = titlebar ?? GuiElement.create();
+    this.#statusbar = statusbar ?? GuiElement.create();
   }
 
   get body() {
@@ -561,6 +538,43 @@ class DialogWindow extends GuiElement {
 
   get titlebar() {
     return this.#titlebar;
+  }
+}
+
+class DialogWindow extends BaseWindow {
+  constructor(selector, size = [400, 300]) {
+    const body = new GuiElement();
+    const statusbar = new Statusbar();
+    const titlebar = new Titlebar();
+
+    [selector, size] = DialogWindow.#getParams(selector, size);
+    super(selector, body, titlebar, statusbar);
+
+    this.size = size;
+  }
+
+  static #getParams(selector, size) {
+    if (typeof selector !== "string" && !Array.isArray(selector)) {
+      throw new TypeError("First argument must be a string or an array");
+    }
+    if (!Array.isArray(size)) {
+      throw new TypeError("Second argument must be an array");
+    }
+    if (Array.isArray(selector)) {
+      // If first argument`, `selector`, is an array assume it is `size`
+      [size, selector] = [selector, ""];
+    }
+    if (
+      size.length !== 2 ||
+      !size.every((item) => {
+        return typeof item === "number" || typeof item === "string";
+      })
+    ) {
+      throw new TypeError(
+        "Second argument must be an array of 2 numbers or strings",
+      );
+    }
+    return [selector, size];
   }
 }
 
