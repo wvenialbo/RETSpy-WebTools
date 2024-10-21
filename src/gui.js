@@ -368,6 +368,21 @@ class ButtonGroup extends GuiElement {
     return this.#createButton(LinkButton, text, selector);
   }
 
+  append(button) {
+    const buttons = Array.isArray(button) ? button : [button];
+    for (const button of buttons) {
+      this.#appendButton(button);
+    }
+  }
+
+  #appendButton(button) {
+    if (button instanceof BaseButton) {
+      super.append(button);
+    } else {
+      throw new TypeError("ButtonGroup can only contain BaseButton instances");
+    }
+  }
+
   #createButton(type, text, selector) {
     const button = new type(text, selector);
     this.append(button);
