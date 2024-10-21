@@ -299,7 +299,24 @@ class GuiElement {
 
 // Simple elements
 
-class Button extends GuiElement {
+class BaseButton extends GuiElement {
+  /**
+   * Constructs a new BaseButton element.
+   *
+   * @param {string} text (Optional) The initial text content of the button.
+   * @param {string} selector (Optional) An optional ID and zero or more CSS
+   *        class names to apply to the button.
+   */
+  constructor(text = "", selector = "") {
+    if (!selector || selector[0] == "." || selector[0] == "#") {
+      throw new SyntaxError("Button selector must start with a tag name");
+    }
+    super(selector);
+    this.text = text;
+  }
+}
+
+class Button extends BaseButton {
   /**
    * Constructs a new Button element.
    *
@@ -308,11 +325,10 @@ class Button extends GuiElement {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    if (!selector || selector[0] == "." || selector[0] == "#") {
-      selector = `button${selector}`;
+    if (selector && selector[0] != "." && selector[0] != "#") {
+      throw new SyntaxError("Button selector must not start with a tag name");
     }
-    super(selector);
-    this.text = text;
+    super(text, `button${selector}`);
   }
 }
 
