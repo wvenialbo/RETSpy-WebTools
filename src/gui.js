@@ -304,14 +304,14 @@ class Button extends GuiElement {
    * Constructs a new Button element.
    *
    * @param {string} text (Optional) The initial text content of the button.
-   * @param {string} selectors (Optional) An optional ID and zero or more CSS
+   * @param {string} selector (Optional) An optional ID and zero or more CSS
    *        class names to apply to the button.
    */
-  constructor(text = "", selectors = "") {
-    if (!selectors || selectors[0] == "." || selectors[0] == "#") {
-      selectors = `button${selectors}`;
+  constructor(text = "", selector = "") {
+    if (!selector || selector[0] == "." || selector[0] == "#") {
+      selector = `button${selector}`;
     }
-    super(selectors);
+    super(selector);
     this.text = text;
   }
 }
@@ -332,11 +332,11 @@ class Titlebar extends GuiElement {
    * @param {string} title (Optional) The initial title text for the titlebar.
    */
   constructor(title = "", buttons = ["help", "info", "close"]) {
-    const selectors = [".retspy-header", ".retspy-frame"];
+    const selector = [".retspy-header", ".retspy-frame"];
     for (const button of buttons) {
-      selectors.push(`button.retspy-button.retspy-${button}`);
+      selector.push(`button.retspy-button.retspy-${button}`);
     }
-    super(selectors.join(" "));
+    super(selector.join(" "));
     const titleframe = this.querySelector(".retspy-frame");
     titleframe.append(this.#label);
     this.title = title;
