@@ -23,6 +23,7 @@ const _PAR_ = "PAR";
 const _SEC_ = "SEC";
 
 const _BAND13_ = "BAND13";
+const _FCOLOR_ = "FCOLOR";
 
 const dmh_settings = {
   name: "DMH downloader tool",
@@ -59,9 +60,9 @@ const dmh_settings = {
     },
     instrument: "G16",
     product: {
-      current: _BAND13_,
+      current: _FCOLOR_,
       supported: [
-        "FCOLOR",
+        _FCOLOR_,
         "BAND02",
         "BAND07",
         "BAND08",
@@ -75,7 +76,7 @@ const dmh_settings = {
     },
     root: "https://www.meteorologia.gov.py/satelite-goes-16",
     sector: {
-      current: _PAR_,
+      current: _SEC_,
       supported: [_PAR_, _MER_, _SEC_],
     },
     interval: 10 * 60 * 1000,
@@ -109,8 +110,37 @@ const SECTOR = dict(dmh_settings.satellite.sector.supported, [
   "Sudamérica",
 ]);
 
+const SECT_MAP = {
+  paraguay: _PAR_,
+  mercosur: _MER_,
+  sudamerica: _SEC_,
+};
+
 function main() {
-  // put your main code here
+  let message = "No query parameters found";
+  const query = new URLSearchParams(globalThis.location.search);
+  if (query.size > 0) {
+    message = "Query parameters found";
+    const product = query.get("producto").toUpperCase();
+    if (dmh_settings.satellite.product.supported.includes(product)) {
+      dmh_settings.satellite.product.current = product;
+    } else {
+      console.warn(`${message}: Invalid product: ${product}`);
+    }
+
+    let sector = query.get("sector").toLowerCase();
+    sector = SECT_MAP[sector];
+    if (dmh_settings.satellite.sector.supported.includes(sector)) {
+      dmh_settings.satellite.sector.current = sector;
+    } else {
+      console.warn(`${message}: Invalid sector: ${sector}`);
+    }
+  }
+  console.debug(
+    `${message}: ` +
+      `${dmh_settings.satellite.product.current}, ` +
+      `${dmh_settings.satellite.sector.current}`,
+  );
 }
 
 /**
