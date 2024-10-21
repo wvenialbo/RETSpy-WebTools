@@ -5,7 +5,7 @@ class InjectionTarget {
 
   #appendNodes(nodes) {
     for (const node of nodes) {
-      console.debug(`append node: ${node.tagName}`, { node });
+      console.debug(`Append node: ${node.tagName}`, { node });
       this.target.append(node);
     }
     return this;
@@ -13,7 +13,7 @@ class InjectionTarget {
 
   injectScripts(entries) {
     entries = Array.isArray(entries) ? entries : [entries];
-    console.debug(`injecting scripts: ${entries.map((entry) => entry.src)}`);
+    console.debug(`Injecting scripts: ${entries.map((entry) => entry.src)}`);
     const nodes = entries.map((entry) => InjectionTarget.#createScript(entry));
     return this.#appendNodes(nodes);
   }
@@ -34,7 +34,7 @@ class InjectionTarget {
 
   injectLinks(entries) {
     entries = Array.isArray(entries) ? entries : [entries];
-    console.debug(`injecting links: ${entries.map((entry) => entry.href)}`);
+    console.debug(`Injecting links: ${entries.map((entry) => entry.href)}`);
     const nodes = entries.map((entry) => InjectionTarget.#createLink(entry));
     return this.#appendNodes(nodes);
   }
@@ -80,7 +80,7 @@ class InjectionTarget {
   }
 
   static #onError(url, event, reject) {
-    let message = `unable to load '${url}'`;
+    let message = `Unable to load '${url}'`;
     if (event?.message) {
       message = `${message}: ${event.message}`;
     }
@@ -91,15 +91,15 @@ class InjectionTarget {
   }
 
   static #onLoad(url) {
-    console.debug(`loaded: '${url}'`);
+    console.debug(`Loaded: '${url}'`);
   }
 }
 
 const dmh_tool = {
-  name: "DMH downloader tool",
+  name: "RETSpy-WebTools — DMH Paraguay",
 
   main: () => {
-    console.debug(`starting ${dmh_tool.name}`);
+    console.debug(`Starting ${dmh_tool.name}`);
 
     const scripts = [
       { src: "lib/fflate.js", async: true, module: true },
@@ -124,10 +124,10 @@ const dmh_tool = {
 };
 
 const simepar_tool = {
-  name: "SIMEPAR downloader tool",
+  name: "RETSpy-WebTools — SIMEPAR Brasil",
 
   main: () => {
-    console.debug(`starting ${simepar_tool.name}`);
+    console.debug(`Starting ${simepar_tool.name}`);
 
     const target = new InjectionTarget("body");
 
