@@ -308,7 +308,10 @@ class Button extends GuiElement {
    *        class names to apply to the button.
    */
   constructor(text = "", selectors = "") {
-    super(`button${selectors}`);
+    if (!selectors || selectors[0] == "." || selectors[0] == "#") {
+      selectors = `button${selectors}`;
+    }
+    super(selectors);
     this.text = text;
   }
 }
