@@ -564,6 +564,26 @@ class DialogWindow extends GuiElement {
   }
 }
 
+class Datepicker extends FormInput {
+  constructor(date = new Date(), selector = "") {
+    if (typeof date === "string") {
+      selector = date;
+      date = new Date();
+    }
+    GuiElement.raiseIfHasTagname(selector);
+    super("datetime-local", `input${selector}`);
+    this.date = date;
+  }
+
+  get date() {
+    return new Date(this.value);
+  }
+
+  set date(date) {
+    this.value = date.toISOString().slice(0, 16);
+  }
+}
+
 // Auxiliary widgets
 
 class ButtonGroup extends GuiElement {
@@ -619,6 +639,7 @@ class ModalWall extends GuiElement {
 export {
   Button,
   ButtonGroup,
+  Datepicker,
   DialogWindow,
   GuiElement,
   LinkButton,
