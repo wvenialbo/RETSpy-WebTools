@@ -519,6 +519,32 @@ class Statusbar extends GuiElement {
   }
 }
 
+class ControlBar extends GuiElement {
+  #buttonPrimary;
+  #buttonSecondary;
+
+  constructor() {
+    super("div button button");
+
+    this.#buttonSecondary = this.querySelector("h5");
+    this.#buttonPrimary = this.querySelector("button:last-child");
+  }
+
+  setLabel(labels) {
+    labels = Array.isArray(labels) ? labels : [labels, ""];
+    this.#buttonSecondary.text = labels[1];
+    this.#buttonPrimary.text = labels[0];
+  }
+
+  get primary() {
+    return this.#buttonPrimary;
+  }
+
+  get secondary() {
+    return this.#buttonSecondary;
+  }
+}
+
 // Windows, dialogs and complex widgets
 
 class BaseWindow extends GuiElement {
