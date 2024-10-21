@@ -204,16 +204,20 @@
 }
 
 .retspy-popup-menu {
-    /* background-color: #eeeeee; */
-    background-color: rebeccapurple;
+    background-color: #eeeeee;
     border: 1px solid #cccccc;
     border-radius: 6px;
     border-top-left-radius: 0;
     display: block;
-    height: 100px;
+    padding: 8px;
     position: absolute;
     right: 0;
     top: 100%;
-    width: 200px;
     z-index: 500;
+}
+
+.retspy-popup-menu .retspy-menu {
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 8px;
 }
