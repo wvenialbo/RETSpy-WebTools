@@ -354,6 +354,27 @@ class LinkButton extends BaseButton {
   }
 }
 
+class ButtonGroup extends GuiElement {
+  constructor(selector = "") {
+    super(`div${selector}`);
+    this.element.role = "group";
+  }
+
+  addButton(text = "", selector = "") {
+    return this.#createButton(Button, text, selector);
+  }
+
+  addLinkButton(text = "", selector = "") {
+    return this.#createButton(LinkButton, text, selector);
+  }
+
+  #createButton(type, text, selector) {
+    const button = new type(text, selector);
+    this.append(button);
+    return button;
+  }
+}
+
 // Components and small widgets
 
 /**
@@ -562,6 +583,7 @@ class ModalWall extends GuiElement {
 
 export {
   Button,
+  ButtonGroup,
   DialogWindow,
   GuiElement,
   LinkButton,
