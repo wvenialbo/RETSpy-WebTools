@@ -85,11 +85,7 @@ const dmh_settings = {
       source: IMAGE.JPG, // original files are JPGs
       supported: [IMAGE.JPG, IMAGE.PnG],
     },
-    replace_video_button: {
-      _PAR_: true,
-      _MER_: false,
-      _SEC_: false,
-    },
+    replace_video_button: dict([_PAR_, _MER_, _SEC_], [true, false, false]),
   },
 };
 
@@ -551,7 +547,9 @@ class Dashboard extends ModalWall {
     const buttonContainer = document.querySelector(".row .btn-group");
     const lastButton = buttonContainer.querySelector("a:last-child");
 
-    if (dmh_settings.satellite.replace_video_button) {
+    const sector = dmh_settings.satellite.sector.current;
+    const replace_button = dmh_settings.satellite.replace_video_button[sector];
+    if (replace_button) {
       buttonContainer.replaceChild(button.element, lastButton);
     } else {
       buttonContainer.insertBefore(button.element, lastButton.nextSibling);
