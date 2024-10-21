@@ -196,6 +196,18 @@ class GuiElement {
     }
   }
 
+  static raiseIfNoTagname(selector) {
+    if (!selector || selector[0] == "." || selector[0] == "#") {
+      throw new SyntaxError("BaseButton selector must start with a tag name");
+    }
+  }
+
+  static raiseIfHasTagname(selector) {
+    if (selector && selector[0] != "." && selector[0] != "#") {
+      throw new SyntaxError("Button selector must not start with a tag name");
+    }
+  }
+
   removeClass(classSelector) {
     const classNames = classSelector ? classSelector.split(".").slice(1) : [];
     this.#element.classList.remove(...classNames);
@@ -311,18 +323,6 @@ class BaseButton extends GuiElement {
     BaseButton.raiseIfNoTagname(selector);
     super(selector);
     this.text = text;
-  }
-
-  static raiseIfNoTagname(selector) {
-    if (!selector || selector[0] == "." || selector[0] == "#") {
-      throw new SyntaxError("BaseButton selector must start with a tag name");
-    }
-  }
-
-  static raiseIfHasTagname(selector) {
-    if (selector && selector[0] != "." && selector[0] != "#") {
-      throw new SyntaxError("Button selector must not start with a tag name");
-    }
   }
 }
 
