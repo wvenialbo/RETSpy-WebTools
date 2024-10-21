@@ -85,7 +85,11 @@ const dmh_settings = {
       source: IMAGE.JPG, // original files are JPGs
       supported: [IMAGE.JPG, IMAGE.PnG],
     },
-    replace_video_button: false,
+    replace_video_button: {
+      _PAR_: true,
+      _MER_: false,
+      _SEC_: false,
+    },
   },
 };
 
