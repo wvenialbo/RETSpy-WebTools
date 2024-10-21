@@ -711,5 +711,4 @@ export {
   LinkButton,
   ModalWall,
   Statusbar,
-  Titlebar,
 };
