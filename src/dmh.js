@@ -103,14 +103,14 @@ function main() {
   dmh_settings.params.referrer = dmh_settings.satellite.root;
 
   const range = new SatelliteURLRange(dmh_settings.satellite);
-  // let fln = FilenameUtils.getFilenames(range.urls);
-  // let zfn = FilenameUtils.buildArchiveFilename(
-  //   range.urls,
-  //   dmh_settings.prefix,
-  //   ARC_TYPE.ZIP,
-  // );
+  let fln = FilenameUtils.getFilenames(range.urls);
+  let zfn = FilenameUtils.buildArchiveFilename(
+    range.urls,
+    dmh_settings.prefix,
+    ARC_TYPE.ZIP,
+  );
   let fdl = new SatelliteDownloader(range.urls);
-  // fdl.downloadFiles(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
+  fdl.downloadFiles_(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
   // fdl.downloadImages(fln, zfn, IMAGE.JPG, ARCHIVE.ZIP);
   // fdl.downloadVideo("video.mp4", 4, VIDEO.MP4);
 
