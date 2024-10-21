@@ -382,22 +382,37 @@ class LinkButton extends BaseButton {
  * Provides a customizable title and a close button.
  */
 class Titlebar extends GuiElement {
-  #label = GuiElement.create("span.retspy-label");
+  #label;
+  #button;
 
   /**
    * Constructs a new Titlebar element.
    *
    * @param {string} title (Optional) The initial title text for the titlebar.
    */
-  constructor(title = "", buttons = ["help", "info", "close"]) {
-    const selector = [".retspy-header", ".retspy-frame"];
-    for (const button of buttons) {
-      selector.push(`button.retspy-button.retspy-${button}`);
-    }
-    super(selector.join(" "));
-    const titleframe = this.querySelector(".retspy-frame");
-    titleframe.append(this.#label);
+  constructor(title = "") {
+    super("div h5 button");
+
+    this.#label = this.querySelector("h5");
+    this.#button = this.querySelector("button");
+
     this.title = title;
+  }
+
+  /**
+   * Returns the close button element.
+   * @returns {Element} The close button element.
+   */
+  get button() {
+    return this.#button;
+  }
+
+  /**
+   * Returns the title text container for the titlebar.
+   * @returns {Element} The title text container.
+   */
+  get label() {
+    return this.#label;
   }
 
   /**
@@ -670,6 +685,5 @@ export {
   LinkButton,
   ModalWall,
   Statusbar,
-  Titlebar
+  Titlebar,
 };
-
