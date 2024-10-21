@@ -317,6 +317,18 @@ class FormInput extends GuiElement {
     super(selector);
     this.element.type = type;
   }
+
+  get type() {
+    return this.element.type;
+  }
+
+  get vale() {
+    return this.element.value;
+  }
+
+  set value(value) {
+    this.element.value = value;
+  }
 }
 
 class BaseButton extends GuiElement {
