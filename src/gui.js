@@ -589,6 +589,5 @@ export {
   LinkButton,
   ModalWall,
   Statusbar,
-  Titlebar
+  Titlebar,
 };
-
