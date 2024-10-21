@@ -81,9 +81,8 @@ const config = [
     },
     rules: {
       indent: ["error", 2],
-      "@stylistic/js/indent": ["error", 2],
-      "@stylistic/js/comma-dangle": ["error", "always-multiline"],
       "@stylistic/js/indent": ["error", 2, { SwitchCase: 1 }],
+      "@stylistic/js/comma-dangle": ["error", "always-multiline"],
       "@stylistic/js/lines-between-class-members": [
         "error",
         {
