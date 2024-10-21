@@ -332,6 +332,24 @@ class Button extends BaseButton {
   }
 }
 
+class LinkButton extends BaseButton {
+  /**
+   * Constructs a new Button element.
+   *
+   * @param {string} text (Optional) The initial text content of the button.
+   * @param {string} selector (Optional) An optional ID and zero or more CSS
+   *        class names to apply to the button.
+   */
+  constructor(text = "", selector = "") {
+    if (selector && selector[0] != "." && selector[0] != "#") {
+      throw new SyntaxError(
+        "Link button selector must not start with a tag name",
+      );
+    }
+    super(text, `a${selector}`);
+  }
+}
+
 // Components and small widgets
 
 /**
@@ -538,4 +556,12 @@ class ModalWall extends GuiElement {
   }
 }
 
-export { Button, DialogWindow, GuiElement, ModalWall, Statusbar, Titlebar };
+export {
+  Button,
+  DialogWindow,
+  GuiElement,
+  LinkButton,
+  ModalWall,
+  Statusbar,
+  Titlebar,
+};
