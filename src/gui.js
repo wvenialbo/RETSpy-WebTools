@@ -89,19 +89,6 @@ class GuiElement {
     return rootElement;
   }
 
-  static #parseSpecification(specification) {
-    const validPattern = /^(?:[a-z]+)?(?:#[a-z][\w-]*)?(?:\.[a-z][\w-]*)*$/;
-    if (!validPattern.test(specification)) {
-      throw new SyntaxError(`Invalid specification: "${specification}"`);
-    }
-    const pattern = /^([a-z]+)?(#[\w-]+)?((?:\.[\w-]+)*)$/;
-    let [tagName, id, classNames] = specification.match(pattern).slice(1);
-    tagName = tagName || "div";
-    id = id || "";
-    classNames = classNames ? classNames.split(".").slice(1) : [];
-    return [tagName, id, classNames];
-  }
-
   static #createFromAttributes(tagName, id, classes) {
     const element = document.createElement(tagName);
     element.id = id;
@@ -109,15 +96,27 @@ class GuiElement {
     return element;
   }
 
+  static #parseSpecification(specification) {
+    const validPattern = /^(?:[a-z]+)?(?:#[a-z][\w-]*)?(?:\.[a-z][\w-]*)*$/;
+    if (!validPattern.test(specification)) {
+      throw new SyntaxError(`Invalid specification: "${specification}"`);
+    }
+    const pattern = /^([a-z]+)?(#[\w-]+)?((?:\.[\w-]+)*)$/;
+    let [tagName, id, classSelector] = specification.match(pattern).slice(1);
+    tagName = tagName || "div";
+    id = id || "";
+    const classNames = classSelector ? classSelector.split(".").slice(1) : [];
+    return [tagName, id, classNames];
+  }
+
+  addClass(classSelector) {
+    const classNames = classSelector ? classSelector.split(".").slice(1) : [];
+    this.#element.classList.add(...classNames);
+  }
+
   addEventListener(name, listener) {
     this.#throwIfNotRegistered(name);
     this.#events[name].push(listener);
-  }
-
-  attachEventObserver(name, observer) {
-    this.addEventListener(name, (event) => {
-      observer.dispatchEvent(event.name, event.parameters);
-    });
   }
 
   append(source) {
@@ -135,6 +134,19 @@ class GuiElement {
     }
   }
 
+  attachEventObserver(name, observer) {
+    this.addEventListener(name, (event) => {
+      observer.dispatchEvent(event.name, event.parameters);
+    });
+  }
+
+  dispatchEvent(name, parameters) {
+    this.#throwIfNotRegistered(name);
+    for (const listener of this.#events[name]) {
+      listener({ name, parameters });
+    }
+  }
+
   entangleEvents(source, destination, selector) {
     const targets = selector
       ? this.#querySelectorAll(selector)
@@ -143,13 +155,6 @@ class GuiElement {
       target.addEventListener(source, (event) => {
         this.dispatchEvent(destination, event);
       });
-    }
-  }
-
-  dispatchEvent(name, parameters) {
-    this.#throwIfNotRegistered(name);
-    for (const listener of this.#events[name]) {
-      listener({ name, parameters });
     }
   }
 
@@ -191,6 +196,11 @@ class GuiElement {
     }
   }
 
+  removeClass(classSelector) {
+    const classNames = classSelector ? classSelector.split(".").slice(1) : [];
+    this.#element.classList.remove(...classNames);
+  }
+
   resize(width, height) {
     this.size = [width, height];
   }
@@ -228,6 +238,13 @@ class GuiElement {
     return this.#element.clientWidth;
   }
 
+  set display(display) {
+    if (display == "none") {
+      throw new Error("Use `hide()` method to hide the element");
+    }
+    this.#display = display;
+  }
+
   get html() {
     return this.#element.innerHTML;
   }
@@ -237,13 +254,6 @@ class GuiElement {
       throw new TypeError("`text` must be a string");
     }
     this.#element.innerHTML = html;
-  }
-
-  set display(display) {
-    if (display == "none") {
-      throw new Error("Use `hide()` method to hide the element");
-    }
-    this.#display = display;
   }
 
   get element() {
