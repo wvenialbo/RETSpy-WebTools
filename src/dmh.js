@@ -9,7 +9,13 @@ import {
   VIDEO,
   VideoDownloader,
 } from "./downloader.js";
-import { Button, DialogWindow, ModalWall } from "./gui.js";
+import {
+  Button,
+  ButtonGroup,
+  DialogWindow,
+  GuiElement,
+  ModalWall,
+} from "./gui.js";
 import { DateUtils, FilenameUtils } from "./shared.js";
 
 const _PAR_ = "PAR";
@@ -100,27 +106,7 @@ const SECTOR = dict(dmh_settings.satellite.sector.supported, [
 ]);
 
 function main() {
-  dmh_settings.params.referrer = dmh_settings.satellite.root;
-
-  const range = new SatelliteURLRange(dmh_settings.satellite);
-  let fln = FilenameUtils.getFilenames(range.urls);
-  let zfn = FilenameUtils.buildArchiveFilename(
-    range.urls,
-    dmh_settings.prefix,
-    ARC_TYPE.ZIP,
-  );
-  let fdl = new SatelliteDownloader(range.urls);
-  fdl.downloadFiles_(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
-  // fdl.downloadImages(fln, zfn, IMAGE.JPG, ARCHIVE.ZIP);
-  // fdl.downloadVideo("video.mp4", 4, VIDEO.MP4);
-
-  // const begin = new Date("2024-06-15T00:24:32-04:00");
-  // const end = new Date("2024-06-16T01:26:41-04:00");
-  // const range2 = new SatelliteURLRange(dmh_settings.satellite, begin, end);
-  // fln = FilenameUtils.getFilenames(range2.urls);
-  // zfn = FilenameUtils.buildArchiveFilename(range2.urls, dmh_settings.prefix);
-  // fdl = new SatelliteDownloader(range2.urls);
-  // fdl.downloadFiles(fln, zfn, dmh_settings.params);
+  // put your main code here
 }
 
 /**
@@ -485,20 +471,91 @@ class Dashboard extends ModalWall {
     this.addEventListener("close", () => this.hide());
     this.entangleEvents("click", "close", ".retspy-close");
 
-    this.button = Dashboard.#createButton(this);
+    this.button_d = Dashboard.#createDownloadButton();
+    this.button_p = Dashboard.#createButton(this);
   }
 
-  static #createButton(dashboard) {
-    const button = new Button("Panel RETSpy", ".btn.btn-default");
-    button.registerEvent("open");
-    button.addEventListener("open", () => dashboard.toggle());
-    button.entangleEvents("click", "open");
+  static download() {
+    dmh_settings.params.referrer = dmh_settings.satellite.root;
+
+    const range = new SatelliteURLRange(dmh_settings.satellite);
+    let fln = FilenameUtils.getFilenames(range.urls);
+    let zfn = FilenameUtils.buildArchiveFilename(
+      range.urls,
+      dmh_settings.prefix,
+      ARC_TYPE.ZIP,
+    );
+    let fdl = new SatelliteDownloader(range.urls);
+    fdl.downloadFiles(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
+    // fdl.downloadImages(fln, zfn, IMAGE.JPG, ARCHIVE.ZIP);
+    // fdl.downloadVideo("video.mp4", 4, VIDEO.MP4);
+  }
+
+  static #downloadRange() {
+    const begin = new Date("2024-06-15T00:24:32-04:00");
+    const end = new Date("2024-06-16T01:26:41-04:00");
+    const range2 = new SatelliteURLRange(dmh_settings.satellite, begin, end);
+    let fln = FilenameUtils.getFilenames(range2.urls);
+    let zfn = FilenameUtils.buildArchiveFilename(
+      range2.urls,
+      dmh_settings.prefix,
+    );
+    let fdl = new SatelliteDownloader(range2.urls);
+    fdl.downloadFiles(fln, zfn, dmh_settings.params);
+  }
+
+  static #createDownloadButton() {
+    const button = new Button("Descarga", ".btn.btn-default");
+    button.registerEvent("download");
+    button.addEventListener("download", () => Dashboard.download());
+    button.entangleEvents("click", "download");
 
     const buttonContainer = document.querySelector(".row .btn-group");
     const lastButton = buttonContainer.querySelector("a:last-child");
-    buttonContainer.insertBefore(button.element, lastButton.nextSibling);
+    buttonContainer.replaceChild(button.element, lastButton);
 
     return button;
+  }
+
+  static #createButton(dashboard) {
+    const popup = Dashboard.#createPopup(dashboard);
+
+    const button = new Button("▼", ".btn.btn-default");
+    button.registerEvent("open-popup");
+    button.addEventListener("open-popup", () => popup.toggle());
+    button.entangleEvents("click", "open-popup");
+
+    const buttonContainer = document.querySelector(".row .btn-group");
+    const lastButton = buttonContainer.querySelector("button:last-child");
+
+    buttonContainer.insertBefore(popup.element, lastButton.nextSibling);
+    buttonContainer.insertBefore(button.element, popup.element.nextSibling);
+
+    return button;
+  }
+
+  static #createPopup(dashboard) {
+    const button1 = new Button("Descarga Por Fecha", ".btn.btn-default");
+    const button2 = new Button("Descarga Avanzada", ".btn.btn-default");
+
+    const group = new ButtonGroup(".btn-group.btn-group-vertical.btn-group-sm");
+    group.append([button1, button2]);
+
+    const popup = new GuiElement("div#retspy-menu.retspy-popup-menu");
+    popup.append(group);
+    popup.hide();
+
+    for (const button of [button1, button2]) {
+      button.registerEvent("open-dialog");
+      button.addEventListener("open-dialog", () => dashboard.toggle());
+      button.entangleEvents("click", "open-dialog");
+
+      button.registerEvent("close-popup");
+      button.addEventListener("close-popup", () => popup.toggle());
+      button.entangleEvents("click", "close-popup");
+    }
+
+    return popup;
   }
 }
 
