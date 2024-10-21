@@ -308,11 +308,15 @@ class BaseButton extends GuiElement {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    if (!selector || selector[0] == "." || selector[0] == "#") {
-      throw new SyntaxError("Button selector must start with a tag name");
-    }
+    BaseButton.raiseIfNoTagname(selector);
     super(selector);
     this.text = text;
+  }
+
+  static raiseIfNoTagname(selector) {
+    if (!selector || selector[0] == "." || selector[0] == "#") {
+      throw new SyntaxError("BaseButton selector must start with a tag name");
+    }
   }
 
   static raiseIfHasTagname(selector) {
