@@ -455,23 +455,18 @@ class Titlebar extends GuiElement {
  */
 class Statusbar {
   #bar;
-  #content;
 
   /**
    * Constructs a new Statusbar element.
    */
   constructor(content) {
-    this.#content = content;
     this.#bar = content.querySelector("hr");
   }
 
   addStatus(text = "", selector = "", role = "") {
     const status = new GuiElement(selector, role);
     status.html = markdownToHtml(text);
-    this.#content.element.insertBefore(
-      status.element,
-      this.#bar.element.nextSibling,
-    );
+    this.#bar.after(status.element);
   }
 }
 
