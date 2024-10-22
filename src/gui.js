@@ -319,6 +319,10 @@ class GuiElement {
     return this.#element;
   }
 
+  set element(element) {
+    this.#element = element;
+  }
+
   get height() {
     return this.#element.style.height;
   }
