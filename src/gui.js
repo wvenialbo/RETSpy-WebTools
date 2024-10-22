@@ -691,6 +691,49 @@ class DialogWindow extends BaseWindow {
   }
 }
 
+class ModalDialog {
+  #curtain;
+  #dialog;
+
+  constructor(selector) {
+    this.#curtain = new GuiElement(selector);
+    this.#dialog = new DialogWindow();
+    this.#curtain.append(this.dialog);
+  }
+
+  get body() {
+    return this.#dialog.body;
+  }
+
+  get container() {
+    return this.#dialog.container;
+  }
+
+  get content() {
+    return this.#dialog.content;
+  }
+
+  get controlBar() {
+    return this.#dialog.controlBar;
+  }
+
+  get curtain() {
+    return this.#curtain;
+  }
+
+  get dialog() {
+    return this.#dialog;
+  }
+
+  get status() {
+    return this.#dialog.status;
+  }
+
+  get titleBar() {
+    return this.#dialog.titleBar;
+  }
+}
+
 // Auxiliary widgets
 
 class ButtonGroup extends GuiElement {
@@ -736,4 +779,5 @@ export {
   DialogWindow,
   GuiElement,
   LinkButton,
+  ModalDialog,
 };
