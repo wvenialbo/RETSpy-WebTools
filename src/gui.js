@@ -404,7 +404,7 @@ class FormInput extends GuiElement {
     return this.element.type;
   }
 
-  get vale() {
+  get value() {
     return this.element.value;
   }
 
