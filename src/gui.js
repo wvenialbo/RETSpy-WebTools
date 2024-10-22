@@ -453,6 +453,23 @@ class Button extends BaseButton {
     }
   }
 
+  get id() {
+    return this.element.id;
+  }
+
+  set id(id) {
+    this.name = id;
+    this.element.id = id;
+  }
+
+  get name() {
+    return this.element.name;
+  }
+
+  set name(name) {
+    this.element.name = name;
+  }
+
   get type() {
     return this.element.type;
   }
