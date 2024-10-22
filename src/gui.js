@@ -512,10 +512,11 @@ class TitleBar extends GuiElement {
    * @param {string} title (Optional) The initial title text for the titlebar.
    */
   constructor(title = "") {
-    super("div h5 button");
+    super("div button h4");
 
-    this.#label = this.querySelector("h5");
-    this.#button = this.querySelector("button");
+    this.#label = this.querySelector("h4");
+    this.#button = new Button(this.querySelector("button"));
+    this.#button.html = "&times;";
 
     this.title = title;
   }
