@@ -472,6 +472,11 @@ class Statusbar {
   clear() {
     this.#bar.after();
   }
+
+  setStatus(text = "", selector = "", role = "") {
+    this.clear();
+    this.addStatus(text, selector, role);
+  }
 }
 
 class ControlBar extends GuiElement {
