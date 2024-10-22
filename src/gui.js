@@ -118,10 +118,8 @@ class GuiElement {
     }
     const pattern = /^([a-z]+|h[1-6])?(?:#([\w-]+))?((?:\.[\w-]+)*)$/;
     let [tagName, id, classSelector] = specification.match(pattern).slice(1);
-    tagName = tagName || "div";
-    id = id ?? "";
     const classNames = classSelector ? classSelector.split(".").slice(1) : [];
-    return [tagName, id, classNames];
+    return [tagName || "div", id ?? "", classNames];
   }
 
   addClass(classSelector) {
