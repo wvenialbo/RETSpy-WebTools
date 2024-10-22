@@ -632,12 +632,8 @@ class BaseWindow extends GuiElement {
 
 class DialogWindow extends BaseWindow {
   constructor(selector, size = [400, 300]) {
-    const body = new GuiElement();
-    const controlbar = new ControlBar();
-    const titlebar = new TitleBar();
-
     [selector, size] = DialogWindow.#getParams(selector, size);
-    super(selector, body, titlebar, statusbar);
+    super(selector);
 
     this.size = size;
   }
