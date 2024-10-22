@@ -475,7 +475,7 @@ class TitleBar extends GuiElement {
 /**
  * Represents a statusbar element for a GUI application.
  */
-class Statusbar {
+class StatusPanel {
   #bar;
 
   /**
@@ -578,7 +578,7 @@ class BaseWindow extends GuiElement {
 class DialogWindow extends BaseWindow {
   constructor(selector, size = [400, 300]) {
     const body = new GuiElement();
-    const statusbar = new Statusbar();
+    const statusbar = new StatusPanel();
     const titlebar = new TitleBar();
 
     [selector, size] = DialogWindow.#getParams(selector, size);
