@@ -401,9 +401,13 @@ class GuiElement {
 
 class FormInput extends GuiElement {
   constructor(type, selector = "") {
-    GuiElement.raiseIfNoTagname(selector);
-    super(selector);
-    this.element.type = type;
+    if (typeof type === "string") {
+      GuiElement.raiseIfNoTagname(selector);
+      super(selector);
+      this.element.type = type;
+    } else {
+      super(type);
+    }
   }
 
   get type() {
