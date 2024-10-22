@@ -466,9 +466,8 @@ class Statusbar {
   }
 
   addStatus(text = "", selector = "", role = "") {
-    const status = new GuiElement(selector);
+    const status = new GuiElement(selector, role);
     status.html = markdownToHtml(text);
-    status.element.role = role;
     this.#content.element.insertBefore(
       status.element,
       this.#bar.element.nextSibling,
