@@ -136,6 +136,18 @@ class GuiElement {
     }
   }
 
+  static #getElement(element) {
+    if (element instanceof Element) {
+      return element;
+    }
+    if (element instanceof GuiElement) {
+      return element.element;
+    }
+    throw new TypeError(
+      "`source` must contain only instances of Element or GuiElement",
+    );
+  }
+
   attachEventObserver(name, observer) {
     this.addEventListener(name, (event) => {
       observer.dispatchEvent(event.name, event.parameters);
@@ -660,6 +672,5 @@ export {
   DialogWindow,
   GuiElement,
   LinkButton,
-  ModalWall
+  ModalWall,
 };
-
