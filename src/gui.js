@@ -525,6 +525,25 @@ class StatusPanel {
   }
 }
 
+class BodySection extends GuiElement {
+  #content;
+  #status;
+
+  constructor() {
+    super("div hr");
+    this.#content = new ContentPanel(this);
+    this.#status = new StatusPanel(this);
+  }
+
+  get content() {
+    return this.#content;
+  }
+
+  get status() {
+    return this.#status;
+  }
+}
+
 class ControlBar extends GuiElement {
   #buttonPrimary;
   #buttonSecondary;
@@ -567,47 +586,47 @@ class ControlBar extends GuiElement {
 
 class BaseWindow extends GuiElement {
   #body;
-  #content;
-  #statusbar;
-  #titlebar;
+  #container;
+  #controlBar;
+  #titleBar;
 
-  constructor(source, body, titlebar, statusbar) {
+  constructor(source, body, titleBar, controlBar) {
     super(`${source} div`);
 
-    body = body ?? GuiElement.create();
-    titlebar = titlebar ?? GuiElement.create();
-    statusbar = statusbar ?? GuiElement.create();
+    body = body ?? new BodySection();
+    titleBar = titleBar ?? new TitleBar();
+    controlBar = controlBar ?? new ControlBar();
 
-    this.#content = this.querySelector("div");
-    this.#content.append([titlebar, body, statusbar]);
+    this.#container = this.querySelector("div");
+    this.#container.append([titleBar, body, controlBar]);
 
     this.#body = body;
-    this.#titlebar = titlebar;
-    this.#statusbar = statusbar;
+    this.#titleBar = titleBar;
+    this.#controlBar = controlBar;
   }
 
   get body() {
     return this.#body;
   }
 
+  get container() {
+    return this.#container;
+  }
+
   get content() {
-    return this.#content;
+    return this.#body.content;
   }
 
-  set status(text) {
-    this.#statusbar.status = text;
+  get controlBar() {
+    return this.#controlBar;
   }
 
-  get statusbar() {
-    return this.#statusbar;
-  }
-
-  set title(title) {
-    this.#titlebar.title = title;
+  get status() {
+    return this.#body.status;
   }
 
   get titlebar() {
-    return this.#titlebar;
+    return this.#titleBar;
   }
 }
 
