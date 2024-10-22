@@ -720,6 +720,18 @@ class ModalDialog {
     this.#curtain.append(this.#dialog);
   }
 
+  hide() {
+    this.#curtain.hide();
+  }
+
+  toggle() {
+    this.#curtain.toggle();
+  }
+
+  show() {
+    this.#curtain.show();
+  }
+
   get body() {
     return this.#dialog.body;
   }
