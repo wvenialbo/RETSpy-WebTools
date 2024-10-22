@@ -101,7 +101,9 @@ class GuiElement {
     if (id) {
       element.id = id;
     }
-    element.classList.add(...classes);
+    if (classes?.length > 0) {
+      element.classList.add(...classes);
+    }
     return element;
   }
 
