@@ -309,6 +309,10 @@ class GuiElement {
     return this.#element.clientWidth;
   }
 
+  get dataset() {
+    return this.#element.dataset;
+  }
+
   get element() {
     return this.#element;
   }
