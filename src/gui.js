@@ -124,15 +124,7 @@ class GuiElement {
   append(source) {
     const elements = Array.isArray(source) ? source : [source];
     for (const element of elements) {
-      if (element instanceof Element) {
-        this.#element.append(element);
-      } else if (element instanceof GuiElement) {
-        this.#element.append(element.element);
-      } else {
-        throw new TypeError(
-          "`source` must contain only instances of Element or GuiElement",
-        );
-      }
+      this.#element.append(GuiElement.#getElement(element));
     }
   }
 
