@@ -176,7 +176,7 @@ class GuiElement {
     }
   }
 
-  insertAfter(source) {
+  after(source) {
     const elements = Array.isArray(source) ? source : [source];
     for (const element of elements) {
       this.#element.after(GuiElement.#getElement(element));
@@ -665,6 +665,5 @@ export {
   DialogWindow,
   GuiElement,
   LinkButton,
-  ModalWall
+  ModalWall,
 };
-
