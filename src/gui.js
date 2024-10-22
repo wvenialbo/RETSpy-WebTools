@@ -491,12 +491,12 @@ class Statusbar {
     this.#bar.after(status.element);
   }
 
-  clear() {
+  clearStatus() {
     this.#bar.after();
   }
 
   setStatus(text = "", selector = "", role = "") {
-    this.clear();
+    this.clearStatus();
     this.addStatus(text, selector, role);
   }
 }
