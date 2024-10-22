@@ -416,8 +416,16 @@ class BaseButton extends GuiElement {
   constructor(text = "", selector = "") {
     BaseButton.raiseIfNoTagname(selector);
     super(selector);
-    this.element.type = "button";
+    this.type = "button";
     this.text = text;
+  }
+
+  get type() {
+    return this.element.type;
+  }
+
+  set type(type) {
+    this.element.type = type;
   }
 }
 
