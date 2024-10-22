@@ -633,7 +633,7 @@ class BaseWindow extends GuiElement {
     return this.#body.status;
   }
 
-  get titlebar() {
+  get titleBar() {
     return this.#titleBar;
   }
 }
