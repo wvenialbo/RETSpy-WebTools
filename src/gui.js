@@ -688,7 +688,7 @@ class DialogWindow extends BaseWindow {
     }
     if (Array.isArray(selector)) {
       // If first argument`, `selector`, is an array assume it is `size`
-      [size, selector] = [selector, "div"];
+      [size, selector] = [selector, ""];
     }
     if (
       size.length !== 2 ||
@@ -700,7 +700,7 @@ class DialogWindow extends BaseWindow {
         "Second argument must be an array of 2 numbers or strings",
       );
     }
-    return [selector, size];
+    return [selector || "div", size];
   }
 }
 
