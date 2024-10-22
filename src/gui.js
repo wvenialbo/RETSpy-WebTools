@@ -254,13 +254,13 @@ class GuiElement {
 
   static raiseIfNoTagname(selector) {
     if (!selector || selector[0] == "." || selector[0] == "#") {
-      throw new SyntaxError("BaseButton selector must start with a tag name");
+      throw new SyntaxError("Selector must start with a tag name");
     }
   }
 
   static raiseIfHasTagname(selector) {
     if (selector && selector[0] != "." && selector[0] != "#") {
-      throw new SyntaxError("Button selector must not start with a tag name");
+      throw new SyntaxError("Selector must not start with a tag name");
     }
   }
 
