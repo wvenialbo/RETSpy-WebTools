@@ -264,6 +264,10 @@ class GuiElement {
     this.size = [width, height];
   }
 
+  setAttribute(name, value) {
+    this.#element.setAttribute(name, value);
+  }
+
   show() {
     this.#element.style.display = this.#display;
   }
