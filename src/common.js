@@ -108,4 +108,24 @@ function zip(...arrays) {
   );
 }
 
-export { backdict, dict, invdict, lzip, undict, unpack, unzip, zip };
+function markdownToHtml(markdownText) {
+  const boldRegex = /\*\*([^*]+?)\*\*/g;
+  const italicRegex = /\*([^*]+?)\*/g;
+
+  let html = markdownText.replaceAll(boldRegex, "<strong>$1</strong>");
+  html = html.replaceAll(italicRegex, "<em>$1</em>");
+
+  return html;
+}
+
+export {
+  backdict,
+  dict,
+  invdict,
+  lzip,
+  markdownToHtml,
+  undict,
+  unpack,
+  unzip,
+  zip,
+};
