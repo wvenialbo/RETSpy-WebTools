@@ -127,6 +127,15 @@ class GuiElement {
   }
 
   after(source) {
+    if (source === undefined) {
+      // Clear all elements after this element
+      let { nextSibling } = this.#element;
+      while (nextSibling) {
+        nextSibling.remove();
+        ({ nextSibling } = this.#element);
+      }
+      return;
+    }
     const elements = Array.isArray(source) ? source : [source];
     for (const element of elements) {
       this.#element.after(GuiElement.#getElement(element));
