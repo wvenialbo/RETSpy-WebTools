@@ -443,7 +443,7 @@ class Button extends BaseButton {
     } else {
       super(text);
     }
-    if (!this.type) {
+    if (this.type == "submit") {
       this.type = "button";
     }
   }
