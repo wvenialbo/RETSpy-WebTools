@@ -206,10 +206,10 @@ class GuiElement {
   }
 
   hide() {
-    if (this.#element.style.display !== "none") {
+    if (this.#element.style.display && this.#element.style.display !== "none") {
       this.#display = this.#element.style.display;
-      this.#element.style.display = "none";
     }
+    this.#element.style.display = "none";
   }
 
   querySelector(selector) {
