@@ -50,6 +50,8 @@ class GuiElement {
     if (role) {
       this.#element.role = role;
     }
+    this.#updateDisplay();
+    this.show();
   }
 
   static create(source) {
@@ -206,9 +208,7 @@ class GuiElement {
   }
 
   hide() {
-    if (this.#element.style.display && this.#element.style.display !== "none") {
-      this.#display = this.#element.style.display;
-    }
+    this.#updateDisplay();
     this.#element.style.display = "none";
   }
 
@@ -276,6 +276,13 @@ class GuiElement {
     }
   }
 
+  #updateDisplay() {
+    const computedStyle = globalThis.getComputedStyle(this.#element);
+    if (computedStyle.display !== "none") {
+      this.#display = computedStyle.display;
+    }
+  }
+
   visible() {
     return this.#element.style.display != "none";
   }
@@ -295,13 +302,6 @@ class GuiElement {
 
   get clientWidth() {
     return this.#element.clientWidth;
-  }
-
-  set display(display) {
-    if (display == "none") {
-      throw new Error("Use `hide()` method to hide the element");
-    }
-    this.#display = display;
   }
 
   get element() {
