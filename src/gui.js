@@ -526,6 +526,8 @@ class Datepicker extends FormInput {
   }
 
   set date(date) {
+    const timeZone = date.getTimezoneOffset() * 60 * 1000;
+    date = new Date(date.getTime() - timeZone);
     this.value = date.toISOString().slice(0, 16);
   }
 }
