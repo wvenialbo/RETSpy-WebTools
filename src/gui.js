@@ -468,6 +468,10 @@ class Statusbar {
     status.html = markdownToHtml(text);
     this.#bar.after(status.element);
   }
+
+  clear() {
+    this.#bar.after();
+  }
 }
 
 class ControlBar extends GuiElement {
