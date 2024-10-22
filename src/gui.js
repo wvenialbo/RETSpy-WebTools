@@ -414,18 +414,13 @@ class BaseButton extends GuiElement {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    BaseButton.raiseIfNoTagname(selector);
-    super(selector);
-    this.type = "button";
-    this.text = text;
-  }
-
-  get type() {
-    return this.element.type;
-  }
-
-  set type(type) {
-    this.element.type = type;
+    if (typeof text === "string") {
+      BaseButton.raiseIfNoTagname(selector);
+      super(selector);
+      this.text = text;
+    } else {
+      super(text);
+    }
   }
 }
 
@@ -438,8 +433,22 @@ class Button extends BaseButton {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    BaseButton.raiseIfHasTagname(selector);
-    super(text, `button${selector}`);
+    if (typeof text === "string") {
+      BaseButton.raiseIfHasTagname(selector);
+      super(text, `button${selector}`);
+      this.element.setAttribute("type", "button");
+      console.debug(this.element);
+    } else {
+      super(text);
+    }
+  }
+
+  get type() {
+    return this.element.type;
+  }
+
+  set type(type) {
+    this.element.type = type;
   }
 }
 
