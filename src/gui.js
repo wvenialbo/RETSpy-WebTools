@@ -1,3 +1,5 @@
+import { markdownToHtml } from "./common.js";
+
 /**
  * Represents a Graphical User Interface (GUI) element for building and
  * managing HTML elements with a focus on readability and maintainability.
@@ -427,95 +429,24 @@ class Titlebar extends GuiElement {
 
 /**
  * Represents a statusbar element for a GUI application.
- *
- * Provides methods for adding sections, setting layout, and updating section
- * content.
  */
-class Statusbar extends GuiElement {
-  #section = [];
+class Statusbar {
+  #bar;
+  #content;
 
   /**
    * Constructs a new Statusbar element.
    */
-  constructor(sections = [["", "auto"]]) {
-    super(".retspy-footer");
-    for (const section of sections) {
-      this.addSection(...section);
-    }
+  constructor(content) {
+    this.#content = content;
+    this.#bar = content.querySelector("hr");
   }
 
-  /**
-   * Adds a new section to the statusbar.
-   *
-   * @param {string} type (Optional) The type of section (defaults to
-   *        "retspy-bevel").
-   * @param {string} width (Optional) The width of the section (defaults to
-   *        "auto").
-   * @returns {this} The current Statusbar instance.
-   */
-  addSection(type = "", width = "auto") {
-    // type: retspy-flat, retspy-bevel (default)
-    const section = Statusbar.#createSection(type);
-    this.#section.push(section);
-    this.append(section.frame);
-    section.frame.width = width;
-    return this;
-  }
-
-  /**
-   * Creates a new statusbar section element.
-   *
-   * @param {string} type (Optional) The type of section (defaults to
-   *        "retspy-bevel").
-   * @returns {Object} An object representing the section, with `frame` and
-   *          `label` properties.
-   * @private
-   */
-  static #createSection(type) {
-    type = type ? `.${type}` : ".retspy-bevel";
-    const frame = new GuiElement(`.retspy-frame span.retspy-label${type}`);
-    const label = frame.querySelectorAll(".retspy-label");
-    return { frame, label };
-  }
-
-  /**
-   * Sets the layout of the statusbar sections.
-   *
-   * @param {string|string[]} layout An array of widths for each section, or a
-   *        single width to apply to all sections.
-   */
-  set layout(layout) {
-    layout = Array.isArray(layout) ? layout : [layout];
-    const maxLength = Math.min(this.#section.length, layout.length);
-    for (let index = 0; index < maxLength; index++) {
-      this.#section[index].frame.width = layout[index];
-    }
-  }
-
-  /**
-   * Sets the text content of a specific section in the statusbar.
-   *
-   * @param {[string, number]} content The content to set. The first element is
-   *        the text content, and the second element is the index of the
-   *        section to update (starting from 0).
-   */
-  set section(content) {
-    const [text, index] = content;
-    this.#section[index].label.text = text;
-  }
-
-  /**
-   * Sets the text content of a specific section in the statusbar.
-   *
-   * @param {string|string[]} content The text content to set. If an array is
-   *        provided, it updates multiple sections.
-   */
-  set status(text) {
-    text = Array.isArray(text) ? text : [text];
-    const maxLength = Math.min(this.#section.length, text.length);
-    for (let index = 0; index < maxLength; index++) {
-      this.#section[index].label.text = text[index];
-    }
+  addStatus(text = "", selector = "", role = "") {
+    const status = new GuiElement(selector);
+    status.html = markdownToHtml(text);
+    status.element.role = role;
+    this.#content.element.insertBefore(status.element, this.#bar.element.nextSibling);
   }
 }
 
@@ -709,5 +640,6 @@ export {
   DialogWindow,
   GuiElement,
   LinkButton,
-  ModalWall,
+  ModalWall
 };
+
