@@ -126,6 +126,13 @@ class GuiElement {
     this.#events[name].push(listener);
   }
 
+  after(source) {
+    const elements = Array.isArray(source) ? source : [source];
+    for (const element of elements) {
+      this.#element.after(GuiElement.#getElement(element));
+    }
+  }
+
   append(source) {
     const elements = Array.isArray(source) ? source : [source];
     for (const element of elements) {
@@ -137,6 +144,13 @@ class GuiElement {
     this.addEventListener(name, (event) => {
       observer.dispatchEvent(event.name, event.parameters);
     });
+  }
+
+  before(source) {
+    const elements = Array.isArray(source) ? source : [source];
+    for (const element of elements) {
+      this.#element.before(GuiElement.#getElement(element));
+    }
   }
 
   dispatchEvent(name, parameters) {
@@ -173,20 +187,6 @@ class GuiElement {
     if (this.#element.style.display !== "none") {
       this.#display = this.#element.style.display;
       this.#element.style.display = "none";
-    }
-  }
-
-  after(source) {
-    const elements = Array.isArray(source) ? source : [source];
-    for (const element of elements) {
-      this.#element.after(GuiElement.#getElement(element));
-    }
-  }
-
-  before(source) {
-    const elements = Array.isArray(source) ? source : [source];
-    for (const element of elements) {
-      this.#element.before(GuiElement.#getElement(element));
     }
   }
 
