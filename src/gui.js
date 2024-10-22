@@ -167,6 +167,23 @@ class GuiElement {
     }
   }
 
+  insertAfter(source) {
+    const elements = Array.isArray(source) ? source : [source];
+    const referenceNode = this.#element;
+    const { parentNode } = referenceNode;
+    for (const element of elements) {
+      if (element instanceof Element) {
+        parentNode.insertBefore(element, referenceNode.nextSibling);
+      } else if (element instanceof GuiElement) {
+        parentNode.insertBefore(element.element, referenceNode.nextSibling);
+      } else {
+        throw new TypeError(
+          "`source` must contain only instances of Element or GuiElement",
+        );
+      }
+    }
+  }
+
   querySelector(selector) {
     return GuiElement.create(this.#element.querySelector(selector));
   }
@@ -446,7 +463,10 @@ class Statusbar {
     const status = new GuiElement(selector);
     status.html = markdownToHtml(text);
     status.element.role = role;
-    this.#content.element.insertBefore(status.element, this.#bar.element.nextSibling);
+    this.#content.element.insertBefore(
+      status.element,
+      this.#bar.element.nextSibling,
+    );
   }
 }
 
