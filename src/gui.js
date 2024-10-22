@@ -212,6 +212,10 @@ class GuiElement {
     throw new TypeError("`source` must be a string, Element, or GuiElement");
   }
 
+  hasEvent(name) {
+    return this.#isRegistered(name);
+  }
+
   hide() {
     this.#updateDisplay();
     this.#element.style.display = "none";
