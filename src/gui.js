@@ -183,7 +183,7 @@ class GuiElement {
     }
   }
 
-  insertBefore(source) {
+  before(source) {
     const elements = Array.isArray(source) ? source : [source];
     for (const element of elements) {
       this.#element.before(GuiElement.#getElement(element));
