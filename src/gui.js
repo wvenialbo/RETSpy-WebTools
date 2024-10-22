@@ -391,7 +391,7 @@ class GuiElement {
 
 class FormInput extends GuiElement {
   constructor(type, selector = "") {
-    BaseButton.raiseIfNoTagname(selector);
+    GuiElement.raiseIfNoTagname(selector);
     super(selector);
     this.element.type = type;
   }
@@ -419,7 +419,7 @@ class BaseButton extends GuiElement {
    */
   constructor(text = "", selector = "") {
     if (typeof text === "string") {
-      BaseButton.raiseIfNoTagname(selector);
+      GuiElement.raiseIfNoTagname(selector);
       super(selector);
       this.text = text;
     } else {
@@ -438,7 +438,7 @@ class Button extends BaseButton {
    */
   constructor(text = "", selector = "") {
     if (typeof text === "string") {
-      BaseButton.raiseIfHasTagname(selector);
+      GuiElement.raiseIfHasTagname(selector);
       super(text, `button${selector}`);
     } else {
       super(text);
@@ -466,7 +466,7 @@ class LinkButton extends BaseButton {
    *        class names to apply to the button.
    */
   constructor(text = "", selector = "") {
-    BaseButton.raiseIfHasTagname(selector);
+    GuiElement.raiseIfHasTagname(selector);
     super(text, `a${selector}`);
   }
 }
