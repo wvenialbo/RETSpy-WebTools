@@ -37,7 +37,7 @@ class GuiElement {
    * @throws {TypeError} If the provided source is not a string, Element, or
    *         GuiElement.
    */
-  constructor(source = "") {
+  constructor(source = "", role = "") {
     if (typeof source === "string") {
       this.#element = GuiElement.#specificationConstructor(source);
     } else if (source instanceof GuiElement) {
@@ -46,6 +46,9 @@ class GuiElement {
       this.#element = source;
     } else {
       throw new TypeError("`source` must be a string, Element, or GuiElement");
+    }
+    if (role) {
+      this.#element.role = role;
     }
   }
 
@@ -93,7 +96,9 @@ class GuiElement {
 
   static #createFromAttributes(tagName, id, classes) {
     const element = document.createElement(tagName);
-    element.id = id;
+    if (id) {
+      element.id = id;
+    }
     element.classList.add(...classes);
     return element;
   }
@@ -661,5 +666,6 @@ export {
   DialogWindow,
   GuiElement,
   LinkButton,
-  ModalWall,
+  ModalWall
 };
+
