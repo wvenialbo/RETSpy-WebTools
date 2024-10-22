@@ -106,11 +106,12 @@ class GuiElement {
   }
 
   static #parseSpecification(specification) {
-    const validPattern = /^(?:[a-z]+)?(?:#[a-z][\w-]*)?(?:\.[a-z][\w-]*)*$/;
+    const validPattern =
+      /^(?:[a-z]+|h[1-6])?(?:#[a-z][\w-]*)?(?:\.[a-z][\w-]*)*$/;
     if (!validPattern.test(specification)) {
       throw new SyntaxError(`Invalid specification: "${specification}"`);
     }
-    const pattern = /^([a-z]+)?(#[\w-]+)?((?:\.[\w-]+)*)$/;
+    const pattern = /^([a-z]+|h[1-6])?(#[\w-]+)?((?:\.[\w-]+)*)$/;
     let [tagName, id, classSelector] = specification.match(pattern).slice(1);
     tagName = tagName || "div";
     id = id ?? "";
