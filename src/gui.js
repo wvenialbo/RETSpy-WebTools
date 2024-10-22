@@ -551,6 +551,10 @@ class StatusPanel {
     this.clearStatus();
     this.addStatus(text, selector, role);
   }
+
+  set status(text) {
+    this.setStatus(text);
+  }
 }
 
 class BodySection extends GuiElement {
