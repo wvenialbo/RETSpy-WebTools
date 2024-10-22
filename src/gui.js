@@ -181,6 +181,13 @@ class GuiElement {
     }
   }
 
+  insertBefore(source) {
+    const elements = Array.isArray(source) ? source : [source];
+    for (const element of elements) {
+      this.#element.before(GuiElement.#getElement(element));
+    }
+  }
+
   querySelector(selector) {
     return GuiElement.create(this.#element.querySelector(selector));
   }
