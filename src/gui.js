@@ -729,20 +729,6 @@ class ButtonGroup extends GuiElement {
   }
 }
 
-class ModalWall extends GuiElement {
-  #curtain;
-
-  constructor(id) {
-    id = id ? `#${id}` : "";
-    super(`${id}.retspy-modal .retspy-content`);
-    this.#curtain = this.querySelector(".retspy-content");
-  }
-
-  get body() {
-    return this.#curtain;
-  }
-}
-
 export {
   Button,
   ButtonGroup,
@@ -750,5 +736,4 @@ export {
   DialogWindow,
   GuiElement,
   LinkButton,
-  ModalWall,
 };
