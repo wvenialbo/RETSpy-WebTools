@@ -518,7 +518,7 @@ class ContentPanel {
     this.#bar.before();
   }
 
-  setStatus(content) {
+  setContent(content) {
     this.clearContent();
     this.addContent(content);
   }
