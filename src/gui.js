@@ -529,17 +529,29 @@ class ControlBar extends GuiElement {
   #buttonPrimary;
   #buttonSecondary;
 
-  constructor() {
+  constructor(labels = ["Accept", "Cancel"]) {
     super("div button button");
 
     this.#buttonSecondary = this.querySelector("button");
     this.#buttonPrimary = this.querySelector("button:last-child");
+
+    this.setLabel(labels);
   }
 
   setLabel(labels) {
     labels = Array.isArray(labels) ? labels : [labels, ""];
-    this.#buttonPrimary.text = labels[0];
-    this.#buttonSecondary.text = labels[1];
+    if (labels[0]) {
+      this.#buttonPrimary.text = labels[0];
+    } else {
+      this.#buttonPrimary.hide();
+      this.#buttonPrimary.text = "";
+    }
+    if (labels[1]) {
+      this.#buttonSecondary.text = labels[1];
+    } else {
+      this.#buttonSecondary.hide();
+      this.#buttonSecondary.text = "";
+    }
   }
 
   get primary() {
@@ -602,7 +614,7 @@ class BaseWindow extends GuiElement {
 class DialogWindow extends BaseWindow {
   constructor(selector, size = [400, 300]) {
     const body = new GuiElement();
-    const statusbar = new StatusPanel();
+    const controlbar = new ControlBar();
     const titlebar = new TitleBar();
 
     [selector, size] = DialogWindow.#getParams(selector, size);
