@@ -6,15 +6,17 @@ import {
   FileDownloader,
   IMAGE,
   ImageDownloader,
+  IMG_TYPE,
   VIDEO,
   VideoDownloader,
 } from "./downloader.js";
 import {
   Button,
   ButtonGroup,
-  DialogWindow,
+  Datepicker,
   GuiElement,
-  ModalWall,
+  Label,
+  ModalDialog,
 } from "./gui.js";
 import { DateUtils, FilenameUtils } from "./shared.js";
 
@@ -83,7 +85,7 @@ const dmh_settings = {
     type: {
       current: IMAGE.JPG,
       source: IMAGE.JPG, // original files are JPGs
-      supported: [IMAGE.JPG, IMAGE.PnG],
+      supported: [IMAGE.JPG, IMAGE.PNG],
     },
     replace_video_button: dict([_PAR_, _MER_, _SEC_], [true, false, false]),
   },
@@ -221,7 +223,7 @@ class SatelliteURLRange {
    */
   static #create(settings, beginDate, endDate) {
     const baseURL = SatelliteURLRange.#buildBaseURL(settings);
-    const typeURL = settings.type.source;
+    const typeURL = IMG_TYPE[settings.type.source];
     const urls = [];
     let currentDate = beginDate;
     const scanInterval = settings.interval;
@@ -491,57 +493,150 @@ Fax: +595 21 438 1220
   }
 }
 
-class Dashboard extends ModalWall {
-  constructor(width, height) {
-    super();
-    this.hide();
-    document.body.append(this.element);
+class BootstrapModalDialog extends ModalDialog {
+  constructor(id) {
+    id = id ? `#${id}` : "";
+    super(`${id}.modal.fade`);
+    this.curtain.tabIndex = -1;
+    this.curtain.role = "dialog";
 
-    this.panel = new DialogWindow("", [width, height]); //#1A213D #2E318E
-    this.panel.title = "RETSpy — Panel de descarga de imágenes";
-    this.body.append(this.panel);
+    this.dialog.role = "document";
+    this.dialog.addClass(".modal-dialog");
+    this.container.addClass(".modal-content");
 
-    this.registerEvent("close");
-    this.addEventListener("close", () => this.hide());
-    this.entangleEvents("click", "close", ".retspy-close");
+    this.titleBar.addClass(".modal-header");
+    this.body.addClass(".modal-body");
+    this.controlBar.addClass(".modal-footer");
+
+    this.titleBar.label.addClass(".modal-title");
+    this.titleBar.button.addClass(".close");
+    this.titleBar.button.dataset.dismiss = "modal";
+
+    this.controlBar.primary.addClass(".btn.btn-primary");
+    this.controlBar.secondary.addClass(".btn.btn-secondary");
+    this.controlBar.secondary.dataset.dismiss = "modal";
+  }
+
+  addContent(content) {
+    this.content.addContent(content);
+  }
+
+  addStatus(text = "", level = "info") {
+    this.status.addStatus(text, `.alert.alert-${level}`, "alert");
+  }
+
+  clearContent() {
+    this.content.clearContent();
+  }
+
+  clearStatus() {
+    this.status.after();
+  }
+
+  setContent(content) {
+    this.content.setContent(content);
+  }
+
+  setStatus(text = "", level = "info") {
+    this.status.setStatus(text, `.alert.alert-${level}`, "alert");
+  }
+
+  set size(value) {
+    this.dialog.size = value;
+  }
+
+  set title(value) {
+    this.titleBar.title = value;
+  }
+}
+
+class Dashboard {
+  constructor(id, size) {
+    this.panel = new BootstrapModalDialog(id);
+    this.panel.size = size;
+
+    const { curtain } = this.panel;
+
+    curtain.registerEvent("download-range");
+    curtain.addEventListener("download-range", () => this.#doDownload());
+    curtain.entangleEvents("click", "download-range", ".btn-primary");
+
+    document.body.append(this.panel.curtain.element);
+
+    this.panel.title = "RETSpy — Panel de descarga";
 
     this.button_d = Dashboard.#createDownloadButton();
-    this.button_p = Dashboard.#createButton(this);
+    this.button_p = this.#createButton();
   }
 
-  static download() {
-    dmh_settings.params.referrer = dmh_settings.satellite.root;
-
-    const range = new SatelliteURLRange(dmh_settings.satellite);
-    let fln = FilenameUtils.getFilenames(range.urls);
-    let zfn = FilenameUtils.buildArchiveFilename(
-      range.urls,
-      dmh_settings.prefix,
-      ARC_TYPE.ZIP,
-    );
-    let fdl = new SatelliteDownloader(range.urls);
-    fdl.downloadFiles(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
-    // fdl.downloadImages(fln, zfn, IMAGE.JPG, ARCHIVE.ZIP);
-    // fdl.downloadVideo("video.mp4", 4, VIDEO.MP4);
+  setAction(action) {
+    console.debug(`Action: ${action}`);
+    switch (action) {
+      case "download-range": {
+        this.#initDownloadRange();
+        break;
+      }
+      case "download-advanced": {
+        this.#initDownloadAdvanced();
+        break;
+      }
+      default: {
+        console.warn(`Invalid action: ${action}`);
+      }
+    }
   }
 
-  static #downloadRange() {
-    const begin = new Date("2024-06-15T00:24:32-04:00");
-    const end = new Date("2024-06-16T01:26:41-04:00");
-    const range2 = new SatelliteURLRange(dmh_settings.satellite, begin, end);
-    let fln = FilenameUtils.getFilenames(range2.urls);
-    let zfn = FilenameUtils.buildArchiveFilename(
-      range2.urls,
-      dmh_settings.prefix,
-    );
-    let fdl = new SatelliteDownloader(range2.urls);
-    fdl.downloadFiles(fln, zfn, dmh_settings.params);
+  #initDownloadRange() {
+    const mainLabel = new GuiElement(".retspy-label");
+    mainLabel.text = "Selecciona un rango de fechas:";
+
+    const currentDate = new Date();
+    const previousDate = new Date(currentDate);
+    previousDate.setHours(currentDate.getHours() - 4);
+
+    const beginDate = new Datepicker(previousDate, "#retspy-begin");
+    const beginLabel = new Label("Inicio: ");
+    beginLabel.for = beginDate.id;
+
+    const beginWrapper = new GuiElement(".retspy-group");
+    beginWrapper.append([beginLabel, beginDate]);
+
+    const endDate = new Datepicker(currentDate, "#retspy-end");
+    const endLabel = new Label("Fin: ");
+    beginLabel.for = endDate.id;
+
+    const endWrapper = new GuiElement(".retspy-group");
+    endWrapper.append([endLabel, endDate]);
+
+    this.panel.setContent([mainLabel, beginWrapper, endWrapper]);
+
+    this.panel.controlBar.secondary.text = "Cerrar";
+    this.panel.controlBar.primary.text = "Descargar";
+    this.panel.curtain.dataset.retspyAction = "download-range";
+  }
+
+  #initDownloadAdvanced() {}
+
+  #doDownload() {
+    const { curtain } = this.panel;
+    const action = curtain.dataset.retspyAction;
+
+    const begin = new Datepicker(curtain.querySelector("#retspy-begin"));
+    const end = new Datepicker(curtain.querySelector("#retspy-end"));
+
+    if (action === "download-range") {
+      console.debug("Download range");
+      this.panel.setStatus("Descargando imágenes...", "info");
+      Dashboard.#downloadRange(begin.date, end.date);
+    } else if (action === "download-advanced") {
+      console.debug("Download advanced");
+    }
   }
 
   static #createDownloadButton() {
     const button = new Button("Descarga", ".btn.btn-default");
     button.registerEvent("download");
-    button.addEventListener("download", () => Dashboard.download());
+    button.addEventListener("download", () => Dashboard.#downloadCurrent());
     button.entangleEvents("click", "download");
 
     const buttonContainer = document.querySelector(".row .btn-group");
@@ -558,8 +653,8 @@ class Dashboard extends ModalWall {
     return button;
   }
 
-  static #createButton(dashboard) {
-    const popup = Dashboard.#createPopup(dashboard);
+  #createButton() {
+    const popup = this.#createPopup();
 
     const button = new Button("▼", ".btn.btn-default");
     button.registerEvent("open-popup");
@@ -579,9 +674,12 @@ class Dashboard extends ModalWall {
     return button;
   }
 
-  static #createPopup(dashboard) {
+  #createPopup() {
     const button1 = new Button("Descarga Por Fecha", ".btn.btn-default");
     const button2 = new Button("Descarga Avanzada", ".btn.btn-default");
+
+    button1.dataset.retspyAction = "download-range";
+    button2.dataset.retspyAction = "download-advanced";
 
     const group = new ButtonGroup(
       ".retspy-menu.btn-group.btn-group-vertical.btn-group-sm",
@@ -593,9 +691,12 @@ class Dashboard extends ModalWall {
     popup.hide();
 
     for (const button of [button1, button2]) {
-      button.registerEvent("open-dialog");
-      button.addEventListener("open-dialog", () => dashboard.toggle());
-      button.entangleEvents("click", "open-dialog");
+      const action = button.dataset.retspyAction;
+      button.registerEvent("open-modal");
+      button.addEventListener("open-modal", () => this.setAction(action));
+      button.entangleEvents("click", "open-modal");
+      button.dataset.target = `#${this.panel.id}`;
+      button.dataset.toggle = "modal";
 
       button.registerEvent("close-popup");
       button.addEventListener("close-popup", () => popup.toggle());
@@ -610,10 +711,40 @@ class Dashboard extends ModalWall {
 
     return popup;
   }
+
+  static #downloadCurrent() {
+    const range = new SatelliteURLRange(dmh_settings.satellite);
+    Dashboard.#download(range);
+  }
+
+  static #downloadRange(begin, end) {
+    const range = new SatelliteURLRange(dmh_settings.satellite, begin, end);
+    Dashboard.#download(range);
+  }
+
+  static #download(range) {
+    dmh_settings.params.referrer = dmh_settings.satellite.root;
+
+    let fln = FilenameUtils.getFilenames(range.urls);
+    let zfn = FilenameUtils.buildArchiveFilename(
+      range.urls,
+      dmh_settings.prefix,
+      ARC_TYPE.ZIP,
+    );
+
+    let fdl = new SatelliteDownloader(range.urls);
+    fdl.downloadFiles(fln, zfn, ARCHIVE.ZIP, dmh_settings.params);
+    // fdl.downloadImages(fln, zfn, IMAGE.JPG, ARCHIVE.ZIP);
+    // fdl.downloadVideo("video.mp4", 4, VIDEO.MP4);
+  }
+
+  get id() {
+    return this.panel.id;
+  }
 }
 
 window.addEventListener("load", () => {
-  const dashboard = new Dashboard("400px", "300px");
+  const _ = new Dashboard("retspy-modal", ["400px", "300px"]);
 });
 
 if (document.readyState === "loading") {
@@ -621,77 +752,3 @@ if (document.readyState === "loading") {
 } else {
   main();
 }
-
-// class SatelliteTool {
-//     constructor() {
-//         this.settings = {
-//             name: "DMH downloader tool",
-//             prefix: "DMH_",
-//             params: {
-//                 method: "GET",
-//                 mode: "cors",
-//                 cache: "default",
-//                 credentials: "omit",
-//                 keepalive: false,
-//                 referrer: "",
-//                 referrerPolicy: "strict-origin-when-cross-origin",
-//             },
-//             satellite: {
-//                 fps: {
-//                     current: 4,
-//                     min: 1,
-//                     max: 30,
-//                 },
-//                 instrument: "G16",
-//                 product: {
-//                     current: _BAND13_,
-//                     supported: [
-//                         "FCOLOR", "BAND02", "BAND07", "BAND08", "BAND09",
-//                         _BAND13_, "BAND14", "BAND15", "DCPRGB", "NMPRGB",
-//                     ],
-//                 },
-//                 root: "https://www.meteorologia.gov.py/satelite-goes-16",
-//                 sector: {
-//                     current: _PAR_,
-//                     supported: [_PAR_, "MER", "SEC"]
-//                 },
-//                 interval: 10 * 60 * 1000,
-//                 type: {
-//                     current: _JPG_,
-//                     source: _JPG_, // original files are JPGs
-//                     supported: [_JPG_, ".png"],
-//                 },
-//             }
-//         }
-//     }
-
-//     createRangeURLs(beginDate, endDate) {
-//         const baseURL = this.buildBaseURL();
-//         const typeURL = this.settings.satellite.type.source
-
-//         const nextDate = (date, interval) => new Date(date.getTime() + interval);
-
-//         const urls = [];
-
-//         let currentDate = beginDate;
-//         const scanInterval = this.settings.satellite.interval;
-
-//         while (currentDate <= endDate) {
-//             const dateURL = this.buildDateURL(currentDate);
-//             const urlImagen = baseURL + dateURL + typeURL;
-//             urls.push(urlImagen);
-//             currentDate = nextDate(currentDate, scanInterval);
-//         }
-
-//         return urls;
-//     }
-
-//     captureCurrentURLs() {
-//         // as of 2024-10-04 at https://www.meteorologia.gov.py/satelite-goes-16
-//         console.debug({ "window.scans": window.scans });
-
-//         const urls = [];
-
-//         for (const partial of window.scans) {
-//             urls.push(`${this.settings.satellite.root}/${partial}`);
-//         }
