@@ -428,7 +428,7 @@ class LinkButton extends BaseButton {
  *
  * Provides a customizable title and a close button.
  */
-class Titlebar extends GuiElement {
+class TitleBar extends GuiElement {
   #label;
   #button;
 
@@ -579,7 +579,7 @@ class DialogWindow extends BaseWindow {
   constructor(selector, size = [400, 300]) {
     const body = new GuiElement();
     const statusbar = new Statusbar();
-    const titlebar = new Titlebar();
+    const titlebar = new TitleBar();
 
     [selector, size] = DialogWindow.#getParams(selector, size);
     super(selector, body, titlebar, statusbar);
