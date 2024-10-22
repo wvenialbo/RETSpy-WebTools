@@ -520,9 +520,13 @@ class Datepicker extends FormInput {
       selector = date;
       date = new Date();
     }
-    GuiElement.raiseIfHasTagname(selector);
-    super("datetime-local", `input${selector}`);
-    this.date = date;
+    if (date instanceof Date) {
+      GuiElement.raiseIfHasTagname(selector);
+      super("datetime-local", `input${selector}`);
+      this.date = date;
+    } else {
+      super(date);
+    }
   }
 
   get date() {
