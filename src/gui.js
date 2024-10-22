@@ -472,6 +472,30 @@ class TitleBar extends GuiElement {
   }
 }
 
+class ContentPanel {
+  #bar;
+
+  /**
+   * Constructs a new ContentPanel element.
+   */
+  constructor(content) {
+    this.#bar = content.querySelector("hr");
+  }
+
+  addContent(content) {
+    this.#bar.before(content);
+  }
+
+  clearContent() {
+    this.#bar.before();
+  }
+
+  setStatus(content) {
+    this.clearContent();
+    this.addContent(content);
+  }
+}
+
 /**
  * Represents a statusbar element for a GUI application.
  */
