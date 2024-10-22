@@ -522,6 +522,10 @@ class ContentPanel {
     this.clearContent();
     this.addContent(content);
   }
+
+  set content(content) {
+    this.setContent(content);
+  }
 }
 
 /**
