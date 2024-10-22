@@ -171,6 +171,10 @@ class GuiElement {
     }
   }
 
+  clear() {
+    this.#element.innerHTML = "";
+  }
+
   dispatchEvent(name, parameters) {
     this.#throwIfNotRegistered(name);
     for (const listener of this.#events[name]) {
