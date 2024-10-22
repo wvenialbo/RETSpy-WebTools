@@ -206,9 +206,10 @@ class GuiElement {
     if (element instanceof GuiElement) {
       return element.element;
     }
-    throw new TypeError(
-      "`source` must contain only instances of Element or GuiElement",
-    );
+    if (typeof element === "string") {
+      return new GuiElement(element).element;
+    }
+    throw new TypeError("`source` must be a string, Element, or GuiElement");
   }
 
   hide() {
