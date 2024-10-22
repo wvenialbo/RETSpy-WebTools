@@ -683,7 +683,7 @@ class DialogWindow extends BaseWindow {
     }
     if (Array.isArray(selector)) {
       // If first argument`, `selector`, is an array assume it is `size`
-      [size, selector] = [selector, ""];
+      [size, selector] = [selector, "div"];
     }
     if (
       size.length !== 2 ||
