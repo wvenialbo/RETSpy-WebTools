@@ -704,9 +704,16 @@ class ModalDialog {
   #dialog;
 
   constructor(selector) {
-    this.#curtain = new GuiElement(selector);
-    this.#dialog = new DialogWindow();
-    this.#curtain.append(this.dialog);
+    if (typeof selector === "string") {
+      this.#curtain = new GuiElement(selector);
+      this.#dialog = new DialogWindow();
+    } else if (selector instanceof BaseWindow) {
+      this.#curtain = new GuiElement();
+      this.#dialog = selector;
+    } else {
+      throw new TypeError("Selector must be a string or a BaseWindow instance");
+    }
+    this.#curtain.append(this.#dialog);
   }
 
   get body() {
