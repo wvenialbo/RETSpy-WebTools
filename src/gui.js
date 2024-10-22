@@ -156,6 +156,15 @@ class GuiElement {
   }
 
   before(source) {
+    if (source === undefined) {
+      // Clear all elements before this element
+      let { previousSibling } = this.#element;
+      while (previousSibling) {
+        previousSibling.remove();
+        ({ previousSibling } = this.#element);
+      }
+      return;
+    }
     const elements = Array.isArray(source) ? source : [source];
     for (const element of elements) {
       this.#element.before(GuiElement.#getElement(element));
