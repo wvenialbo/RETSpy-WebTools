@@ -300,17 +300,6 @@ class GuiElement {
     this.#display = display;
   }
 
-  get html() {
-    return this.#element.innerHTML;
-  }
-
-  set html(html) {
-    if (typeof html != "string") {
-      throw new TypeError("`text` must be a string");
-    }
-    this.#element.innerHTML = html;
-  }
-
   get element() {
     return this.#element;
   }
@@ -322,6 +311,17 @@ class GuiElement {
   set height(height) {
     this.#element.style.height =
       typeof height == "number" ? `${height}px` : height;
+  }
+
+  get html() {
+    return this.#element.innerHTML;
+  }
+
+  set html(html) {
+    if (typeof html != "string") {
+      throw new TypeError("`text` must be a string");
+    }
+    this.#element.innerHTML = html;
   }
 
   set id(id) {
