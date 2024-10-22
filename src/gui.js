@@ -343,6 +343,10 @@ class GuiElement {
     this.#element.innerHTML = html;
   }
 
+  get id() {
+    return this.#element.id;
+  }
+
   set id(id) {
     this.#element.id = id;
   }
