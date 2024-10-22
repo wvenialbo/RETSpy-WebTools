@@ -173,11 +173,8 @@ class GuiElement {
 
   insertAfter(source) {
     const elements = Array.isArray(source) ? source : [source];
-    const referenceNode = this.#element;
-    const { parentNode } = referenceNode;
     for (const element of elements) {
-      const el = GuiElement.#getElement(element);
-      parentNode.insertBefore(el, referenceNode.nextSibling);
+      this.#element.after(GuiElement.#getElement(element));
     }
   }
 
