@@ -429,6 +429,26 @@ class LinkButton extends BaseButton {
   }
 }
 
+class Datepicker extends FormInput {
+  constructor(date = new Date(), selector = "") {
+    if (typeof date === "string") {
+      selector = date;
+      date = new Date();
+    }
+    GuiElement.raiseIfHasTagname(selector);
+    super("datetime-local", `input${selector}`);
+    this.date = date;
+  }
+
+  get date() {
+    return new Date(this.value);
+  }
+
+  set date(date) {
+    this.value = date.toISOString().slice(0, 16);
+  }
+}
+
 // Components and small widgets
 
 /**
@@ -671,26 +691,6 @@ class DialogWindow extends BaseWindow {
   }
 }
 
-class Datepicker extends FormInput {
-  constructor(date = new Date(), selector = "") {
-    if (typeof date === "string") {
-      selector = date;
-      date = new Date();
-    }
-    GuiElement.raiseIfHasTagname(selector);
-    super("datetime-local", `input${selector}`);
-    this.date = date;
-  }
-
-  get date() {
-    return new Date(this.value);
-  }
-
-  set date(date) {
-    this.value = date.toISOString().slice(0, 16);
-  }
-}
-
 // Auxiliary widgets
 
 class ButtonGroup extends GuiElement {
@@ -730,16 +730,16 @@ class ButtonGroup extends GuiElement {
 }
 
 class ModalWall extends GuiElement {
-  #container;
+  #curtain;
 
   constructor(id) {
     id = id ? `#${id}` : "";
     super(`${id}.retspy-modal .retspy-content`);
-    this.#container = this.querySelector(".retspy-content");
+    this.#curtain = this.querySelector(".retspy-content");
   }
 
   get body() {
-    return this.#container;
+    return this.#curtain;
   }
 }
 
