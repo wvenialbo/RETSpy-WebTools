@@ -349,6 +349,10 @@ class GuiElement {
     [this.width, this.height] = size;
   }
 
+  get tabIndex() {
+    return this.#element.tabIndex;
+  }
+
   set tabIndex(index) {
     this.#element.tabIndex = index;
   }
