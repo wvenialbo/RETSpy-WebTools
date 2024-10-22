@@ -80,9 +80,12 @@ class GuiElement {
    * @private
    */
   static #specificationConstructor(specification) {
-    const specifications = specification
+    let specifications = specification
       .split(" ")
       .filter((entry) => entry !== "");
+    if (specifications.length === 0) {
+      specifications = [specification];
+    }
     const attributes = specifications.map((specification) =>
       GuiElement.#parseSpecification(specification),
     );
