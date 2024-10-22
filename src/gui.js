@@ -436,10 +436,11 @@ class Button extends BaseButton {
     if (typeof text === "string") {
       BaseButton.raiseIfHasTagname(selector);
       super(text, `button${selector}`);
-      this.element.setAttribute("type", "button");
-      console.debug(this.element);
     } else {
       super(text);
+    }
+    if (!this.type) {
+      this.type = "button";
     }
   }
 
