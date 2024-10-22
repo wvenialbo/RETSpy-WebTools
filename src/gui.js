@@ -794,6 +794,10 @@ class ModalDialog {
     return this.#dialog;
   }
 
+  get id() {
+    return this.#curtain.id;
+  }
+
   get status() {
     return this.#dialog.status;
   }
