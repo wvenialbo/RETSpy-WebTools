@@ -671,7 +671,7 @@ class BaseWindow extends GuiElement {
 }
 
 class DialogWindow extends BaseWindow {
-  constructor(selector, size = [400, 300]) {
+  constructor(selector = "", size = [400, 300]) {
     [selector, size] = DialogWindow.#getParams(selector, size);
     super(selector);
 
