@@ -176,15 +176,8 @@ class GuiElement {
     const referenceNode = this.#element;
     const { parentNode } = referenceNode;
     for (const element of elements) {
-      if (element instanceof Element) {
-        parentNode.insertBefore(element, referenceNode.nextSibling);
-      } else if (element instanceof GuiElement) {
-        parentNode.insertBefore(element.element, referenceNode.nextSibling);
-      } else {
-        throw new TypeError(
-          "`source` must contain only instances of Element or GuiElement",
-        );
-      }
+      const el = GuiElement.#getElement(element);
+      parentNode.insertBefore(el, referenceNode.nextSibling);
     }
   }
 
