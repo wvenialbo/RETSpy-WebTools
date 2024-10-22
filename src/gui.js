@@ -493,6 +493,22 @@ class LinkButton extends BaseButton {
   }
 }
 
+class Label extends GuiElement {
+  constructor(text = "", selector = "") {
+    GuiElement.raiseIfHasTagname(selector);
+    super(`label${selector}`);
+    this.text = text;
+  }
+
+  get for() {
+    return this.element.htmlFor;
+  }
+
+  set for(id) {
+    this.element.htmlFor = id;
+  }
+}
+
 class Datepicker extends FormInput {
   constructor(date = new Date(), selector = "") {
     if (typeof date === "string") {
@@ -874,6 +890,7 @@ export {
   Datepicker,
   DialogWindow,
   GuiElement,
+  Label,
   LinkButton,
   ModalDialog,
 };
