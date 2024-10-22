@@ -332,6 +332,14 @@ class GuiElement {
     this.#element.id = id;
   }
 
+  get role() {
+    return this.#element.role;
+  }
+
+  set role(role) {
+    this.#element.role = role;
+  }
+
   set size(size) {
     [this.width, this.height] = size;
   }
