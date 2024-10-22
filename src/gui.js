@@ -532,14 +532,14 @@ class ControlBar extends GuiElement {
   constructor() {
     super("div button button");
 
-    this.#buttonSecondary = this.querySelector("h5");
+    this.#buttonSecondary = this.querySelector("button");
     this.#buttonPrimary = this.querySelector("button:last-child");
   }
 
   setLabel(labels) {
     labels = Array.isArray(labels) ? labels : [labels, ""];
-    this.#buttonSecondary.text = labels[1];
     this.#buttonPrimary.text = labels[0];
+    this.#buttonSecondary.text = labels[1];
   }
 
   get primary() {
