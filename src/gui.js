@@ -625,8 +625,8 @@ class ControlBar extends GuiElement {
   constructor(labels = ["Accept", "Cancel"]) {
     super("div button button");
 
-    this.#buttonSecondary = this.querySelector("button");
-    this.#buttonPrimary = this.querySelector("button:last-child");
+    this.#buttonSecondary = new Button(this.querySelector("button"));
+    this.#buttonPrimary = new Button(this.querySelector("button:last-child"));
 
     this.setLabel(labels);
   }
