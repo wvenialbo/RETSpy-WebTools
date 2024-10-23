@@ -518,7 +518,7 @@ class Label extends GuiElement {
   }
 }
 
-class Datepicker extends FormInput {
+class DatePicker extends FormInput {
   constructor(date = new Date(), selector = "") {
     if (typeof date === "string") {
       selector = date;
@@ -556,7 +556,7 @@ class Datepicker extends FormInput {
   }
 
   set date(date) {
-    this.value = Datepicker.#toLocalISOString(date);
+    this.value = DatePicker.#toLocalISOString(date);
   }
 
   get max() {
@@ -564,7 +564,7 @@ class Datepicker extends FormInput {
   }
 
   set max(date) {
-    this.element.max = Datepicker.#toLocalISOString(date);
+    this.element.max = DatePicker.#toLocalISOString(date);
   }
 
   get min() {
@@ -572,7 +572,7 @@ class Datepicker extends FormInput {
   }
 
   set min(date) {
-    this.element.min = Datepicker.#toLocalISOString(date);
+    this.element.min = DatePicker.#toLocalISOString(date);
   }
 
   static #toLocalISOString(date) {
@@ -940,7 +940,7 @@ class ButtonGroup extends GuiElement {
 export {
   Button,
   ButtonGroup,
-  Datepicker,
+  DatePicker,
   DialogWindow,
   GuiElement,
   Label,
