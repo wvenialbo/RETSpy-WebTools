@@ -13,7 +13,7 @@ import {
 import {
   Button,
   ButtonGroup,
-  Datepicker,
+  DatePicker,
   GuiElement,
   Label,
   ModalDialog,
@@ -594,19 +594,21 @@ class Dashboard {
     const previousDate = new Date(currentDate);
     previousDate.setHours(currentDate.getHours() - 4);
 
-    const beginDate = new Datepicker(previousDate, "#retspy-begin");
+    const beginDate = new DatePicker(previousDate, "#retspy-begin");
     const beginLabel = new Label("Inicio: ");
     beginLabel.for = beginDate.id;
 
     const beginWrapper = new GuiElement(".retspy-group");
     beginWrapper.append([beginLabel, beginDate]);
 
-    const endDate = new Datepicker(currentDate, "#retspy-end");
+    const endDate = new DatePicker(currentDate, "#retspy-end");
     const endLabel = new Label("Fin: ");
     beginLabel.for = endDate.id;
 
     const endWrapper = new GuiElement(".retspy-group");
     endWrapper.append([endLabel, endDate]);
+
+    DatePicker.entangleRange(beginDate, endDate);
 
     this.panel.setContent([mainLabel, beginWrapper, endWrapper]);
 
@@ -621,8 +623,8 @@ class Dashboard {
     const { curtain } = this.panel;
     const action = curtain.dataset.retspyAction;
 
-    const begin = new Datepicker(curtain.querySelector("#retspy-begin"));
-    const end = new Datepicker(curtain.querySelector("#retspy-end"));
+    const begin = new DatePicker(curtain.querySelector("#retspy-begin"));
+    const end = new DatePicker(curtain.querySelector("#retspy-end"));
 
     if (action === "download-range") {
       console.debug("Download range");
