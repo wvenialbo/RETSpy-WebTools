@@ -541,6 +541,22 @@ class Datepicker extends FormInput {
     this.value = Datepicker.#toLocalISOString(date);
   }
 
+  get max() {
+    return new Date(this.element.max);
+  }
+
+  set max(date) {
+    this.element.max = Datepicker.#toLocalISOString(date);
+  }
+
+  get min() {
+    return new Date(this.element.min);
+  }
+
+  set min(date) {
+    this.element.min = Datepicker.#toLocalISOString(date);
+  }
+
   static #toLocalISOString(date) {
     const timeZone = date.getTimezoneOffset() * 60 * 1000;
     const localDate = new Date(date.getTime() - timeZone);
