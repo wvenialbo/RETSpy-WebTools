@@ -555,11 +555,15 @@ class Dashboard {
     this.panel = new BootstrapModalDialog(id);
     this.panel.size = size;
 
+    this.panel.controlBar.secondary.text = "Cerrar";
+    this.panel.controlBar.primary.text = "Descargar";
+
     const { curtain } = this.panel;
 
     curtain.registerEvent("download-range");
     curtain.addEventListener("download-range", () => this.#doDownload());
     curtain.entangleEvents("click", "download-range", ".btn-primary");
+    curtain.dataset.retspyAction = "download-range";
 
     document.body.append(this.panel.curtain.element);
 
@@ -595,10 +599,6 @@ class Dashboard {
   }
 
   #createCommonContent() {
-    this.panel.controlBar.secondary.text = "Cerrar";
-    this.panel.controlBar.primary.text = "Descargar";
-    this.panel.curtain.dataset.retspyAction = "download-range";
-
     const mainLabel = new GuiElement(".retspy-label");
     mainLabel.text = "Selecciona un rango de fechas:";
 
