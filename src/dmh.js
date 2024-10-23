@@ -569,7 +569,7 @@ class Dashboard {
     this.button_p = this.#createButton();
   }
 
-  setAction(action) {
+  #setAction(action) {
     console.debug(`Action: ${action}`);
     switch (action) {
       case "download-range": {
@@ -694,7 +694,7 @@ class Dashboard {
     for (const button of [button1, button2]) {
       const action = button.dataset.retspyAction;
       button.registerEvent("open-modal");
-      button.addEventListener("open-modal", () => this.setAction(action));
+      button.addEventListener("open-modal", () => this.#setAction(action));
       button.entangleEvents("click", "open-modal");
       button.dataset.target = `#${this.panel.id}`;
       button.dataset.toggle = "modal";
