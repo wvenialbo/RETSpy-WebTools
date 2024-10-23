@@ -156,8 +156,8 @@ class GuiElement {
   }
 
   attachEventObserver(name, observer) {
-    this.addEventListener(name, (event) => {
-      observer.dispatchEvent(event.name, event.parameters);
+    this.addEventListener(name, (parameters) => {
+      observer.dispatchEvent(parameters.name, parameters.event);
     });
   }
 
@@ -181,10 +181,10 @@ class GuiElement {
     this.#element.innerHTML = "";
   }
 
-  dispatchEvent(name, parameters) {
+  dispatchEvent(name, event) {
     this.#throwIfNotRegistered(name);
     for (const listener of this.#events[name]) {
-      listener({ name, parameters });
+      listener({ name, event });
     }
   }
 
