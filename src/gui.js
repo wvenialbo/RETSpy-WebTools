@@ -535,16 +535,20 @@ class Datepicker extends FormInput {
 
   static entangleRange(minPicker, maxPicker) {
     minPicker.registerEvent("min-change");
-    minPicker.addEventListener("min-change", (event) => {
-      maxPicker.min = event.target.value;
+    minPicker.addEventListener("min-change", () => {
+      minPicker.date = new Date(Math.min(minPicker.date, minPicker.max));
+      maxPicker.min = minPicker.date;
     });
     minPicker.entangleEvents("change", "min-change");
+    maxPicker.min = minPicker.date;
 
     maxPicker.registerEvent("max-change");
-    maxPicker.addEventListener("max-change", (event) => {
-      minPicker.max = event.target.value;
+    maxPicker.addEventListener("max-change", () => {
+      maxPicker.date = new Date(Math.max(maxPicker.date, maxPicker.min));
+      minPicker.max = maxPicker.date;
     });
     maxPicker.entangleEvents("change", "max-change");
+    minPicker.max = maxPicker.date;
   }
 
   get date() {
