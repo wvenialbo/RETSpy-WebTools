@@ -538,9 +538,13 @@ class Datepicker extends FormInput {
   }
 
   set date(date) {
+    this.value = Datepicker.#toLocalISOString(date);
+  }
+
+  static #toLocalISOString(date) {
     const timeZone = date.getTimezoneOffset() * 60 * 1000;
-    date = new Date(date.getTime() - timeZone);
-    this.value = date.toISOString().slice(0, 16);
+    const localDate = new Date(date.getTime() - timeZone);
+    return localDate.toISOString().slice(0, 16);
   }
 }
 
