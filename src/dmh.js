@@ -658,10 +658,9 @@ class Dashboard {
 
     const button = new Button("▼", ".btn.btn-default");
     button.registerEvent("open-popup");
-    button.addEventListener("open-popup", (data) => {
+    button.addEventListener("open-popup", (parameters) => {
       popup.toggle();
-      const event = data.parameters;
-      event.stopPropagation();
+      parameters.event.stopPropagation();
     });
     button.entangleEvents("click", "open-popup");
 
