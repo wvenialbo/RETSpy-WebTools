@@ -587,37 +587,18 @@ class Dashboard {
   }
 
   #initDownloadRange() {
-    const mainLabel = new GuiElement(".retspy-label");
-    mainLabel.text = "Selecciona un rango de fechas:";
-
-    const currentDate = new Date();
-    const previousDate = new Date(currentDate);
-    previousDate.setHours(currentDate.getHours() - 4);
-
-    const beginDate = new DatePicker(previousDate, "#retspy-begin");
-    const beginLabel = new Label("Inicio: ");
-    beginLabel.for = beginDate.id;
-
-    const beginWrapper = new GuiElement(".retspy-group");
-    beginWrapper.append([beginLabel, beginDate]);
-
-    const endDate = new DatePicker(currentDate, "#retspy-end");
-    const endLabel = new Label("Fin: ");
-    beginLabel.for = endDate.id;
-
-    const endWrapper = new GuiElement(".retspy-group");
-    endWrapper.append([endLabel, endDate]);
-
-    DatePicker.entangleRange(beginDate, endDate);
-
-    this.panel.setContent([mainLabel, beginWrapper, endWrapper]);
-
-    this.panel.controlBar.secondary.text = "Cerrar";
-    this.panel.controlBar.primary.text = "Descargar";
-    this.panel.curtain.dataset.retspyAction = "download-range";
+    this.panel.setContent(this.#createCommonContent());
   }
 
   #initDownloadAdvanced() {
+    this.panel.setContent(this.#createCommonContent());
+  }
+
+  #createCommonContent() {
+    this.panel.controlBar.secondary.text = "Cerrar";
+    this.panel.controlBar.primary.text = "Descargar";
+    this.panel.curtain.dataset.retspyAction = "download-range";
+
     const mainLabel = new GuiElement(".retspy-label");
     mainLabel.text = "Selecciona un rango de fechas:";
 
@@ -641,11 +622,7 @@ class Dashboard {
 
     DatePicker.entangleRange(beginDate, endDate);
 
-    this.panel.setContent([mainLabel, beginWrapper, endWrapper]);
-
-    this.panel.controlBar.secondary.text = "Cerrar";
-    this.panel.controlBar.primary.text = "Descargar";
-    this.panel.curtain.dataset.retspyAction = "download-range";
+    return [mainLabel, beginWrapper, endWrapper];
   }
 
   #doDownload() {
